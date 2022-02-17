@@ -2,21 +2,23 @@ package com.metajou.authentication.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+
+import java.sql.Date;
 
 @Data
+@Table
 @ToString
 @RequiredArgsConstructor
 public class Account {
     @Id
     private String id;
     @NonNull
-    private String username;
+    private String userName;
     private String userToken;
     @NonNull
-    private String registerDate;
+    private Date registerDate;
     @NonNull
-    private String mainEmail;
-    private String authToken;
     private String ajouEmail;
     @NonNull
     private Role role;
