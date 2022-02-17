@@ -16,7 +16,6 @@ import java.time.Duration;
 import static io.r2dbc.spi.ConnectionFactoryOptions.*;
 
 @Configuration
-@EnableR2dbcRepositories
 public class AccountR2Config extends AbstractR2dbcConfiguration {
 
     private AccountDbConnectionProperties connectionProperties;
@@ -26,7 +25,6 @@ public class AccountR2Config extends AbstractR2dbcConfiguration {
     }
 
     @Override
-    @NonNull
     @Bean("authR2ConnectionFactory")
     public ConnectionFactory connectionFactory() {
         System.err.println(connectionProperties);
