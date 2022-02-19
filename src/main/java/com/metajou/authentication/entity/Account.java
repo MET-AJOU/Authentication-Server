@@ -6,6 +6,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 
@@ -21,7 +22,7 @@ public class Account {
     @Column("usertoken")
     private String userToken;
     @Column("registerdate")
-    private Instant registerDate;
+    private LocalDate registerDate;
     @Column("ajouemail")
     private String ajouEmail;
     private Role role;
@@ -29,6 +30,6 @@ public class Account {
     public Account(String userName, String userToken) {
         this.userName = userName;
         this.userToken = userToken;
-        this.registerDate = Instant.now();
+        this.registerDate = LocalDate.now();
     }
 }
