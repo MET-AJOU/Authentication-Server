@@ -30,7 +30,7 @@ public class AccountDbConnectionPropertiesTests {
     private String password;
 
     @Test
-    public void testAccountDbConnectionPropertiesAvaliable() {
+    public void checkAccountDbConnectionPropertiesAvaliable() {
         Assertions.assertNotNull(connectionProperties);
         Assertions.assertEquals(connectionProperties.getDriver(), driver);
         Assertions.assertEquals(connectionProperties.getDatabase(), database);

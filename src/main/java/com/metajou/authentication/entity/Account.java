@@ -6,8 +6,11 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.sql.Date;
+import java.time.Instant;
+import java.time.LocalDate;
 
 @Data
+@Table
 @ToString
 @RequiredArgsConstructor
 public class Account {
@@ -18,8 +21,14 @@ public class Account {
     @Column("usertoken")
     private String userToken;
     @Column("registerdate")
-    private Date registerDate;
+    private Instant registerDate;
     @Column("ajouemail")
     private String ajouEmail;
     private Role role;
+
+    public Account(String userName, String userToken) {
+        this.userName = userName;
+        this.userToken = userToken;
+        this.registerDate = Instant.now();
+    }
 }
