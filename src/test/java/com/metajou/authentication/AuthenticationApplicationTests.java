@@ -28,7 +28,6 @@ class AuthenticationApplicationTests {
     @Test
     void contextLoads() {
         Account ac = new Account();
-        accountRepository.findAll().subscribe(account -> System.err.println(account));
     }
 
 }

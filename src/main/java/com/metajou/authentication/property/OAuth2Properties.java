@@ -9,12 +9,14 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 
 @Getter
 @ToString
-@ConfigurationProperties(prefix = "spring.metajou.secret")
+@ConfigurationProperties(prefix = "spring.security.oauth2.client.registration")
 @RequiredArgsConstructor
 @ConstructorBinding
-public class SecretProperties {
-    @Qualifier("serverkey")
-    private final String SERVER_KEY;
-    @Qualifier("createtokenkey")
-    private final String CREATE_TOKEN_KEY;
+public class OAuth2Properties {
+    @Qualifier("client-id")
+    private final String googleClientId;
+    @Qualifier("client secret")
+    private final String googleClientSecret;
+    @Qualifier("google.scope")
+    private final String scope;
 }
