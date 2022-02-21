@@ -27,7 +27,6 @@ public class AccountR2Config extends AbstractR2dbcConfiguration {
     @Override
     @Bean("authR2ConnectionFactory")
     public ConnectionFactory connectionFactory() {
-        System.err.println(connectionProperties);
         ConnectionFactoryOptions options = ConnectionFactoryOptions.builder()
                 .option(DRIVER, connectionProperties.getDriver())
                 .option(HOST, connectionProperties.getHost())
