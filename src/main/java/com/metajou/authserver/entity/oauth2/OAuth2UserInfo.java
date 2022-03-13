@@ -1,6 +1,6 @@
-package com.metajou.authserver.entity.oauth;
+package com.metajou.authserver.entity.oauth2;
 
-import com.metajou.authserver.entity.SubUser;
+import com.metajou.authserver.entity.auth.AuthInfo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -8,10 +8,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
@@ -76,8 +74,8 @@ public class OAuth2UserInfo extends DefaultOidcUser {
         this.email = String.valueOf(properties.get("email"));
     }
 
-    public SubUser extractSubUser(Long mainId) {
-        return new SubUser(this.getId(), this.getProvider(), this.getEmail(), mainId);
+    public AuthInfo extractAuthInfo() {
+        return new AuthInfo(getId(), getProvider(), getEmail());
     }
 
 }

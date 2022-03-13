@@ -7,6 +7,7 @@ import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.Option;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
@@ -18,6 +19,11 @@ import static io.r2dbc.spi.ConnectionFactoryOptions.*;
 @Configuration
 @EnableR2dbcRepositories
 @EnableAutoConfiguration(exclude = R2dbcAutoConfiguration.class) //EnableAutoConfiguration을 이용하여 Bean 2개 생성되는 것을 방지함.
+@ComponentScan(
+        basePackages = {
+                "com.metajou.authserver"
+        }
+)
 public class R2dbcConfig extends AbstractR2dbcConfiguration {
 
     private final CustomR2dbcProperties customR2dbcProperties;

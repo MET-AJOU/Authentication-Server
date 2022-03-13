@@ -1,13 +1,10 @@
 package com.metajou.authserver.service;
 
 import com.metajou.authserver.config.R2dbcConfig;
-import com.metajou.authserver.entity.MainUser;
-import com.metajou.authserver.entity.SubUser;
-import com.metajou.authserver.entity.oauth.OAuth2Provider;
-import com.metajou.authserver.entity.oauth.OAuth2UserInfo;
+import com.metajou.authserver.entity.auth.AuthInfo;
+import com.metajou.authserver.entity.oauth2.OAuth2Provider;
 import com.metajou.authserver.property.CustomR2dbcProperties;
-import com.metajou.authserver.repository.MainUserRepository;
-import com.metajou.authserver.repository.SubUserRepository;
+import com.metajou.authserver.repository.AuthInfoRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +15,6 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(locations = "classpath:secret.properties") // Property 정보는 secret.properties에 저장되어있음.
@@ -31,36 +26,22 @@ import reactor.test.StepVerifier;
                 R2dbcConfig.class,
         }
 )
-public class UserServiceTests {
+public class AuthInfoServiceTests {
 
     @Autowired
-    private MainUserRepository mainUserRepository;
-    @Autowired
-    private SubUserRepository subUserRepository;
+    AuthInfoRepository authInfoRepository;
 
     @Test
-    public void getSubUserTest() {
-
+    public void getAuthInfoTest() {
     }
 
     @Test
-    public void getMainUserTest() {
-
+    public void createAuthInfoTest() {
+        AuthInfo user = new AuthInfo("testuser", OAuth2Provider.GOOGLE, "testuser@gmail.com");
+        System.err.println(user);
+        authInfoRepository.save(user).subscribe();
+        while (true);
     }
 
-    @Test
-    public void registerUserTest() {
-        createMainUserTest().doOnNext(mainUser -> createSubUserTest(mainUser.getId())).as(StepVerifier::create).verifyComplete();
-    }
-
-    private Mono<SubUser> createSubUserTest(Long mainId) {
-        SubUser testSubUser = new SubUser("adfnadnofnoieqfnioqenofinq", OAuth2Provider.GOOGLE, "minshigee@gmail.com", mainId);
-        return subUserRepository.save(testSubUser);
-    }
-
-    private Mono<MainUser> createMainUserTest() {
-        MainUser testMainUser = new MainUser("minshigee");
-        return mainUserRepository.save(testMainUser);
-    }
 
 }
