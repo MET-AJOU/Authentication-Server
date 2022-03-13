@@ -8,12 +8,15 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
-@Component
+/*
+    Component로 추가하고 security_chain에 addfilter하면 2번 호출되는 문제가 발생함.
+    따라서 SecurityConfig에 JwtUtil을 Application Context에서 가져와 new JwtAuthenticationFilter(jwtUtil)방식으로
+    사용함.
+ */
 public class JwtAuthenticationFilter implements WebFilter {
 
     private final JwtUtil jwtUtil;
 
-    @Autowired
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }

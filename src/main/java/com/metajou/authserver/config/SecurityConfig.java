@@ -2,6 +2,7 @@ package com.metajou.authserver.config;
 
 import com.metajou.authserver.security.CustomOauth2LoginSuccessHandler;
 import com.metajou.authserver.security.JwtAuthenticationFilter;
+import com.metajou.authserver.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -16,7 +17,8 @@ import org.springframework.security.web.server.savedrequest.NoOpServerRequestCac
 
 @EnableWebFluxSecurity
 @ComponentScan(basePackages = {
-        "com.metajou.authserver.security"
+        "com.metajou.authserver.security",
+        "com.metajou.authserver.util"
 })
 public class SecurityConfig {
 
@@ -24,9 +26,9 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Autowired
-    public SecurityConfig(CustomOauth2LoginSuccessHandler customOauth2LoginSuccessHandler, JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(CustomOauth2LoginSuccessHandler customOauth2LoginSuccessHandler, JwtUtil jwtUtil) {
         this.customOauth2LoginSuccessHandler = customOauth2LoginSuccessHandler;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtil);
     }
 
     @Bean
