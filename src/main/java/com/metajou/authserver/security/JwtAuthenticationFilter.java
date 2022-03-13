@@ -21,7 +21,7 @@ public class JwtAuthenticationFilter implements WebFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
 
-        //TODO
+        //TODO jwt인증코드
 //        if (isAppropriateRequestForFilter(request)) {
 //            try {
 //                String token = jwtUtil.resolveToken(request);
