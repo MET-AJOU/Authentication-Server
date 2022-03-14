@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,9 +21,7 @@ public class CustomUser implements UserDetails {
     private final String userEmail;
     @Getter
     private final String accessToken;
-
-    @Setter @Getter
-    private List<Role> roles;
+    private final ArrayList<? extends GrantedAuthority> authorities;
     @Setter
     private Boolean isAuthenticated = true;
     @Setter
@@ -34,15 +33,16 @@ public class CustomUser implements UserDetails {
     @Setter
     private Boolean isEnabled = true;
 
-    public CustomUser(String userCode, String userEmail, String accessToken) {
+    public CustomUser(String userCode, String userEmail, String accessToken, ArrayList<? extends GrantedAuthority> authorities) {
         this.userCode = userCode;
         this.userEmail = userEmail;
         this.accessToken = accessToken;
+        this.authorities = authorities;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream().map(authority -> new SimpleGrantedAuthority(authority.name())).collect(Collectors.toList());
+        return this.authorities;
     }
 
     @Override

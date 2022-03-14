@@ -54,7 +54,7 @@ public class JwtUtil {
     public String generateToken(AuthInfo authInfo) {
         Map<String, Object> claims = new HashMap<>();
 
-        List<Role> roles = new ArrayList<>(); //TODO 권한 부여 코드 작성
+        List<Role> roles = authInfo.extractAuthorities(); //TODO 권한 부여 코드 작성
 
         claims.put("role", roles);
         claims.put("email", authInfo.getUserEmail());

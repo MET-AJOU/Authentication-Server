@@ -9,7 +9,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,7 +54,7 @@ public class CustomAuthentication implements Authentication {
 
     @Override
     public Object getPrincipal() {
-        CustomUser user = new CustomUser(getUserCode(), getUserEmail(), getAccessToken());
+        CustomUser user = new CustomUser(getUserCode(), getUserEmail(), getAccessToken(), this.authorities);
 
         //TODO 유저 상태 Set 해주기
         // ex: user.setIsAuthenticated(true);

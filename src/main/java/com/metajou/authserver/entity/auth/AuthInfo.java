@@ -7,8 +7,8 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.security.MessageDigest;
-import java.util.Base64;
-import java.util.Locale;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 @ToString
@@ -27,12 +27,29 @@ public class AuthInfo {
     private String userEmail;
     @Column("user_code")
     private String userCode;
+    @Column("authorities")
+    private String authorities = "";
 
     public AuthInfo(String userId, OAuth2Provider provider, String userEmail) {
         this.userId = userId;
         this.provider = provider;
         this.userEmail = userEmail;
         this.userCode = generateAuthInfoUserCode(userId, provider);
+        this.authorities = Role.ROLE_GUEST.toString() + " ";
+    }
+
+    public AuthInfo(String userId, OAuth2Provider provider, String userEmail, List<Role> roles) {
+        this.userId = userId;
+        this.provider = provider;
+        this.userEmail = userEmail;
+        this.userCode = generateAuthInfoUserCode(userId, provider);
+        roles.stream().forEach(role -> this.authorities += (role.toString() + " "));
+    }
+
+    public List<Role> extractAuthorities() {
+        String[] roleStr = this.authorities.split(" ");
+        return Arrays.stream(roleStr).map(Role::valueOf)
+                .filter(role -> role!=null).collect(Collectors.toList());
     }
 
     private static String generateAuthInfoUserCode(String userId, OAuth2Provider provider) {
