@@ -107,6 +107,7 @@ public class JwtUtil {
 
     public ResponseCookie makeDeletingResponseCookieAccessToken() {
         return ResponseCookie.from(tokenName, null)
-                .maxAge(0).path("").build();
+                .maxAge(0).path("/")
+                .sameSite("Lax").build();
     }
 }

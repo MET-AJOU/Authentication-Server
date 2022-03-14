@@ -55,7 +55,6 @@ public class SecurityConfig {
 
         return http.authorizeExchange()
                 .pathMatchers("/api/**").authenticated()
-                .pathMatchers("/logout").authenticated()
                 .anyExchange().permitAll()
                 .and().build();
     }
