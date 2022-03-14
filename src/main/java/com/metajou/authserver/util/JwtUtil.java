@@ -96,7 +96,9 @@ public class JwtUtil {
     }
 
     public Boolean isAppropriateRequestForFilter(ServerHttpRequest request) {
-        return request.getCookies().containsKey(tokenName);
+        if(!request.getCookies().containsKey(tokenName))
+            return false;
+        return validateToken(request.getCookies().getFirst(tokenName).getValue());
     }
 
     public ResponseCookie makeAddingResponseCookieAccessToken(String token) {

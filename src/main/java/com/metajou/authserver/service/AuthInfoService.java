@@ -13,12 +13,10 @@ import reactor.core.publisher.Mono;
 public class AuthInfoService {
 
     private final AuthInfoRepository authInfoRepository;
-    private final JwtUtil jwtUtil;
 
     @Autowired
-    public AuthInfoService(AuthInfoRepository authInfoRepository, JwtUtil jwtUtil) {
+    public AuthInfoService(AuthInfoRepository authInfoRepository) {
         this.authInfoRepository = authInfoRepository;
-        this.jwtUtil = jwtUtil;
     }
 
     public Mono<AuthInfo> registerAuthInfo(OAuth2UserInfo oAuth2UserInfo){

@@ -41,19 +41,19 @@ public class IndexController {
     }
 
     @GetMapping("/login/{id}")
-    public ResponseEntity<Void> getLogIn(@PathVariable String id, ServerHttpResponse response) {
-        return ResponseEntity
+    public Mono<ResponseEntity<Void>> getLogIn(@PathVariable String id, ServerHttpResponse response) {
+        return Mono.just(ResponseEntity
                 .status(HttpStatus.TEMPORARY_REDIRECT)
                 .location(URI.create("/oauth2/authorization/" + id))
-                .build();
+                .build());
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<Void> getLogOut(@AuthenticationPrincipal CustomUser user, ServerHttpResponse response) {
+    public Mono<ResponseEntity<Void>> getLogOut(@AuthenticationPrincipal CustomUser user, ServerHttpResponse response) {
         tokenService.deleteAccessTokenInCookie(response);
-        return ResponseEntity
+        return Mono.just(ResponseEntity
                 .status(HttpStatus.TEMPORARY_REDIRECT)
                 .location(URI.create("/"))
-                .build();
+                .build());
     }
 }
