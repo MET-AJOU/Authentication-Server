@@ -1,7 +1,6 @@
 package com.metajou.authserver.controller;
 
-import com.metajou.authserver.entity.auth.AuthInfo;
-import com.metajou.authserver.entity.oauth2.OAuth2UserInfo;
+import com.metajou.authserver.entity.auth.CustomUser;
 import com.metajou.authserver.service.AuthInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,8 +21,8 @@ public class AuthController {
     }
 
     @GetMapping("/authinfo")
-    public Mono<AuthInfo> getUserAuthInfo(@AuthenticationPrincipal OAuth2UserInfo userInfo) {
-        return authInfoService.registerAuthInfo(userInfo);
+    public Mono<String> getUserAuthInfo(@AuthenticationPrincipal CustomUser userInfo) {
+        return null;
     }
 
 }

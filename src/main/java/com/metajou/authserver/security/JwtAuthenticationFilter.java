@@ -1,8 +1,9 @@
 package com.metajou.authserver.security;
 
 import com.metajou.authserver.util.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -23,18 +24,23 @@ public class JwtAuthenticationFilter implements WebFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        ServerHttpRequest request = exchange.getRequest();
 
-        //TODO jwt인증코드
-//        if (isAppropriateRequestForFilter(request)) {
-//            try {
-//                String token = jwtUtil.resolveToken(request);
-//                Authentication authentication = jwtUtil.getAuthentication(token);
-//                SecurityContextHolder.getContext().setAuthentication(authentication);
-//            } catch (JWTVerificationException e) {
-//                /* ... */
-//            }
-//        }
+        if (jwtUtil.isAppropriateRequestForFilter(request)) {
+            try {
+                String token = jwtUtil.resolveToken(request);
+                Authentication authentication = jwtUtil.getAuthentication(token);
+                return chain.filter(exchange)
+                        .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
+                        //.subscriberContext(ReactiveSecurityContextHolder.withAuthentication(authentication));
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
+        }
 
         return chain.filter(exchange);
     }
+
+
+
 }

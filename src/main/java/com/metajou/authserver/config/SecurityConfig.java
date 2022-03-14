@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
 import org.springframework.security.web.server.savedrequest.NoOpServerRequestCache;
+import reactor.core.publisher.Mono;
 
 @EnableWebFluxSecurity
 @ComponentScan(basePackages = {
@@ -34,22 +35,27 @@ public class SecurityConfig {
     @Bean
     SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
 
-        http.requestCache()
-                .requestCache(NoOpServerRequestCache.getInstance())
-                .and().securityContextRepository(NoOpServerSecurityContextRepository.getInstance());
+        //TODO Make Stateless
+        //http.requestCache().requestCache(NoOpServerRequestCache.getInstance());
+        http.securityContextRepository(NoOpServerSecurityContextRepository.getInstance());
 
+        //TODO OAuth2Login
         http.oauth2Login(Customizer.withDefaults())
                 .oauth2Login(oAuth2LoginSpec -> {
                     oAuth2LoginSpec.authenticationSuccessHandler(customOauth2LoginSuccessHandler);
                 });
 
-        http.addFilterAfter(jwtAuthenticationFilter, SecurityWebFiltersOrder.LOGOUT);
+        //TODO ADD CUSTOM Filter
+        http.addFilterBefore(jwtAuthenticationFilter, SecurityWebFiltersOrder.OAUTH2_AUTHORIZATION_CODE);
 
-        return http.csrf().disable()
-                .httpBasic().disable()
-                .formLogin().disable()
-                .authorizeExchange()
+        //TODO ETC
+        http.csrf().disable();
+        http.formLogin().disable();
+        http.logout().disable();
+
+        return http.authorizeExchange()
                 .pathMatchers("/api/**").authenticated()
+                .pathMatchers("/logout").authenticated()
                 .anyExchange().permitAll()
                 .and().build();
     }

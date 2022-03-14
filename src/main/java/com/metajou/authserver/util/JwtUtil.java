@@ -1,26 +1,31 @@
 package com.metajou.authserver.util;
 
-import com.metajou.authserver.entity.User;
+import com.metajou.authserver.entity.auth.AuthInfo;
+import com.metajou.authserver.entity.auth.CustomAuthentication;
+import com.metajou.authserver.entity.auth.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class JwtUtil {
 
-    @Value("${springbootwebfluxjjwt.jjwt.secret}")
+    @Value("${spring.project.jjwt.secretkey}")
     private String secret;
-
-    @Value("${springbootwebfluxjjwt.jjwt.expiration}")
+    @Value("${spring.project.jjwt.expiration}")
     private String expirationTime;
+    @Value("${spring.project.jjwt.tokenname}")
+    private String tokenName;
 
     private Key key;
 
@@ -33,7 +38,7 @@ public class JwtUtil {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
-    public String getUsernameFromToken(String token) {
+    public String getUserCodeFromToken(String token) {
         return getAllClaimsFromToken(token).getSubject();
     }
 
@@ -46,20 +51,24 @@ public class JwtUtil {
         return expiration.before(new Date());
     }
 
-    public String generateToken(User user) {
+    public String generateToken(AuthInfo authInfo) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", user.getRoles());
-        return doGenerateToken(claims, user.getUsername());
+
+        List<Role> roles = new ArrayList<>(); //TODO 권한 부여 코드 작성
+
+        claims.put("role", roles);
+        claims.put("email", authInfo.getUserEmail());
+        return doGenerateToken(claims, authInfo.getUserCode());
     }
 
-    private String doGenerateToken(Map<String, Object> claims, String username) {
+    private String doGenerateToken(Map<String, Object> claims, String userCode) {
         Long expirationTimeLong = Long.parseLong(expirationTime); //in second
         final Date createdDate = new Date();
         final Date expirationDate = new Date(createdDate.getTime() + expirationTimeLong * 1000);
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(username)
+                .setSubject(userCode)
                 .setIssuedAt(createdDate)
                 .setExpiration(expirationDate)
                 .signWith(key)
@@ -70,4 +79,34 @@ public class JwtUtil {
         return !isTokenExpired(token);
     }
 
+    public String resolveToken(ServerHttpRequest request) {
+        Assert.notNull(request.getCookies().getFirst(tokenName), "accesstoken Cookie가 비었습니다.");
+        return request.getCookies().getFirst(tokenName).getValue();
+    }
+
+    public Authentication getAuthentication(String token) {
+        CustomAuthentication authentication = new CustomAuthentication(
+                getUserCodeFromToken(token),
+                getAllClaimsFromToken(token),
+                token
+        );
+        authentication.setIsAuthenticated(validateToken(token));
+
+        return authentication;
+    }
+
+    public Boolean isAppropriateRequestForFilter(ServerHttpRequest request) {
+        return request.getCookies().containsKey(tokenName);
+    }
+
+    public ResponseCookie makeAddingResponseCookieAccessToken(String token) {
+        return ResponseCookie.from(tokenName, token)
+                .path("/")
+                .sameSite("Lax").build();
+    }
+
+    public ResponseCookie makeDeletingResponseCookieAccessToken() {
+        return ResponseCookie.from(tokenName, null)
+                .maxAge(0).path("").build();
+    }
 }

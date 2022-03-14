@@ -1,4 +1,4 @@
-package com.metajou.authserver.entity;
+package com.metajou.authserver.entity.auth;
 
 public enum Role {
     ROLE_USER,
