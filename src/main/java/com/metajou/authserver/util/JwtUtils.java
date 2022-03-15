@@ -18,7 +18,7 @@ import java.security.Key;
 import java.util.*;
 
 @Component
-public class JwtUtil {
+public class JwtUtils {
 
     @Value("${spring.project.jjwt.secretkey}")
     private String secret;
@@ -118,4 +118,5 @@ public class JwtUtil {
                 .maxAge(0).path("/")
                 .sameSite("Lax").build();
     }
+
 }

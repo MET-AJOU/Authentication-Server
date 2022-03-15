@@ -1,37 +1,36 @@
 package com.metajou.authserver.service;
 
-import com.metajou.authserver.entity.auth.AuthInfo;
 import com.metajou.authserver.entity.auth.CustomUser;
+import com.metajou.authserver.entity.auth.dto.Token;
 import com.metajou.authserver.repository.AuthInfoRepository;
-import com.metajou.authserver.util.JwtUtil;
+import com.metajou.authserver.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
-import reactor.netty.http.server.HttpServerResponse;
 
 import java.util.Date;
 
 @Service
 public class TokenService {
 
-    private final JwtUtil jwtUtil;
+    private final JwtUtils jwtUtils;
     private final AuthInfoRepository authInfoRepository;
 
     @Autowired
-    public TokenService(JwtUtil jwtUtil, AuthInfoRepository authInfoRepository) {
-        this.jwtUtil = jwtUtil;
+    public TokenService(JwtUtils jwtUtils, AuthInfoRepository authInfoRepository) {
+        this.jwtUtils = jwtUtils;
         this.authInfoRepository = authInfoRepository;
     }
 
-    public Mono<Void> refreshAccessTokenInCookie(CustomUser user, ServerHttpResponse response) {
+    public Mono<Token> refreshAccessTokenInCookie(CustomUser user, ServerHttpResponse response) {
         try {
             return authInfoRepository.findAuthInfoByUserCode(user.getUserCode())
-                    .doOnNext(authInfo -> {
-                        String token = jwtUtil.generateToken(authInfo);
-                        response.addCookie(jwtUtil.makeAddingResponseCookieAccessToken(token));
-                    }).then(Mono.empty());
+                    .map(authInfo -> {
+                        String token = jwtUtils.generateToken(authInfo);
+                        response.addCookie(jwtUtils.makeAddingResponseCookieAccessToken(token));
+                        return new Token(token);
+                    });
         }
         catch (Exception e) {
             System.err.println(e.getMessage());
@@ -40,11 +39,11 @@ public class TokenService {
     }
 
     public Mono<Date> getExpiredTime(CustomUser user) {
-        return Mono.just(jwtUtil.getExpirationDateFromToken(user.getAccessToken()));
+        return Mono.just(jwtUtils.getExpirationDateFromToken(user.getToken().getTokenValue()));
     }
 
     public void deleteAccessTokenInCookie(ServerHttpResponse response) {
-        response.addCookie(jwtUtil.makeDeletingResponseCookieAccessToken());
+        response.addCookie(jwtUtils.makeDeletingResponseCookieAccessToken());
         return;
     }
 

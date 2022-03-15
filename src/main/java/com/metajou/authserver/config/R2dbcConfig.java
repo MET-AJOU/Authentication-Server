@@ -5,11 +5,10 @@ import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.Option;
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration;
@@ -25,11 +24,9 @@ import static io.r2dbc.spi.ConnectionFactoryOptions.*;
 @Configuration
 @EnableR2dbcRepositories
 @EnableAutoConfiguration(exclude = R2dbcAutoConfiguration.class) //EnableAutoConfiguration을 이용하여 Bean 2개 생성되는 것을 방지함.
-@ComponentScan(
-        basePackageClasses = {
-                CustomR2dbcProperties.class
-        }
-)
+@EnableConfigurationProperties(value = {
+        CustomR2dbcProperties.class
+})
 public class R2dbcConfig extends AbstractR2dbcConfiguration {
 
     private final CustomR2dbcProperties customR2dbcProperties;
@@ -61,12 +58,11 @@ public class R2dbcConfig extends AbstractR2dbcConfiguration {
     ConnectionFactoryInitializer initializer(ConnectionFactory connectionFactory) {
         ConnectionFactoryInitializer initializer = new CustomConnectionFactoryInitializer();
         initializer.setConnectionFactory(connectionFactory);
-        try {
-            initializer.setDatabasePopulator(new ResourceDatabasePopulator(new ClassPathResource("create_authinfo_table.sql")));
-        }
-        catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
+        initializer.setDatabasePopulator(
+                new ResourceDatabasePopulator(
+                        new ClassPathResource("sql/create_account_db.sql")
+                )
+        );
         return initializer;
     }
 

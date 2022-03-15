@@ -2,7 +2,7 @@ package com.metajou.authserver.security;
 
 import com.metajou.authserver.entity.oauth2.OAuth2UserInfo;
 import com.metajou.authserver.service.AuthInfoService;
-import com.metajou.authserver.util.JwtUtil;
+import com.metajou.authserver.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -15,12 +15,12 @@ import reactor.core.publisher.Mono;
 public class CustomOauth2LoginSuccessHandler extends RedirectServerAuthenticationSuccessHandler {
 
     private final AuthInfoService authInfoService;
-    private final JwtUtil jwtUtil;
+    private final JwtUtils jwtUtils;
 
     @Autowired
-    public CustomOauth2LoginSuccessHandler(AuthInfoService authInfoService, JwtUtil jwtUtil) {
+    public CustomOauth2LoginSuccessHandler(AuthInfoService authInfoService, JwtUtils jwtUtils) {
         this.authInfoService = authInfoService;
-        this.jwtUtil = jwtUtil;
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -32,10 +32,10 @@ public class CustomOauth2LoginSuccessHandler extends RedirectServerAuthenticatio
             OAuth2UserInfo oAuth2UserInfo = (OAuth2UserInfo) oAuth2AuthenticationToken.getPrincipal();
 
             return authInfoService.registerAuthInfo(oAuth2UserInfo).doOnNext(authInfo -> {
-                String token = jwtUtil.generateToken(authInfo);
+                String token = jwtUtils.generateToken(authInfo);
                 webFilterExchange.getExchange().getResponse()
                         .addCookie(
-                                jwtUtil.makeAddingResponseCookieAccessToken(token)
+                                jwtUtils.makeAddingResponseCookieAccessToken(token)
                         );
             }).then(delegate);
         }

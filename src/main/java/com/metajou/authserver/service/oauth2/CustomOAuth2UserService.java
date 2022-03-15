@@ -1,4 +1,4 @@
-package com.metajou.authserver.service;
+package com.metajou.authserver.service.oauth2;
 
 import com.metajou.authserver.entity.oauth2.OAuth2UserInfo;
 import org.springframework.security.oauth2.client.userinfo.DefaultReactiveOAuth2UserService;

@@ -35,7 +35,7 @@ public class AuthInfo {
         this.provider = provider;
         this.userEmail = userEmail;
         this.userCode = generateAuthInfoUserCode(userId, provider);
-        this.authorities = Role.ROLE_GUEST.toString() + " ";
+        this.authorities = Role.ROLE_GUEST.toString();
     }
 
     public AuthInfo(String userId, OAuth2Provider provider, String userEmail, List<Role> roles) {
@@ -43,13 +43,17 @@ public class AuthInfo {
         this.provider = provider;
         this.userEmail = userEmail;
         this.userCode = generateAuthInfoUserCode(userId, provider);
-        roles.stream().forEach(role -> this.authorities += (role.toString() + " "));
+        roles.stream().forEach(role -> addAuthorities(role));
     }
 
     public List<Role> extractAuthorities() {
-        String[] roleStr = this.authorities.split(" ");
+        String[] roleStr = this.authorities.split(",");
         return Arrays.stream(roleStr).map(Role::valueOf)
                 .filter(role -> role!=null).collect(Collectors.toList());
+    }
+
+    public void addAuthorities(@NonNull Role role) {
+        this.authorities += ("," + role.toString());
     }
 
     private static String generateAuthInfoUserCode(String userId, OAuth2Provider provider) {
