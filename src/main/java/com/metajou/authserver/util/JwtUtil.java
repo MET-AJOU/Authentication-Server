@@ -47,8 +47,13 @@ public class JwtUtil {
     }
 
     private Boolean isTokenExpired(String token) {
-        final Date expiration = getExpirationDateFromToken(token);
-        return expiration.before(new Date());
+        try {
+            final Date expiration = getExpirationDateFromToken(token);
+            return expiration.before(new Date());
+        }
+        catch (Exception e) {
+            return true;
+        }
     }
 
     public String generateToken(AuthInfo authInfo) {
@@ -98,7 +103,8 @@ public class JwtUtil {
     public Boolean isAppropriateRequestForFilter(ServerHttpRequest request) {
         if(!request.getCookies().containsKey(tokenName))
             return false;
-        return validateToken(request.getCookies().getFirst(tokenName).getValue());
+        String token = request.getCookies().getFirst(tokenName).getValue();
+        return validateToken(token);
     }
 
     public ResponseCookie makeAddingResponseCookieAccessToken(String token) {

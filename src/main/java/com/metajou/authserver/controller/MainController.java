@@ -32,6 +32,14 @@ public class MainController {
         return Mono.just("Hello World!");
     }
 
+    @GetMapping("/api")
+    public Mono<ResponseEntity<Void>> getSwaggerHome() {
+        return Mono.just(ResponseEntity
+                .status(HttpStatus.TEMPORARY_REDIRECT)
+                .location(URI.create("/swagger-ui/index.html"))
+                .build());
+    }
+
     @GetMapping("/login/{id}")
     public Mono<ResponseEntity<Void>> getLogIn(@PathVariable String id, ServerHttpResponse response) {
         return Mono.just(ResponseEntity
@@ -48,4 +56,5 @@ public class MainController {
                 .location(URI.create("/"))
                 .build());
     }
+
 }
