@@ -1,30 +1,62 @@
 package com.metajou.authserver.config;
 
+import com.metajou.authserver.security.CustomOauth2LoginSuccessHandler;
+import com.metajou.authserver.security.JwtAuthenticationFilter;
+import com.metajou.authserver.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.parameters.P;
-import org.springframework.security.oauth2.client.oidc.userinfo.OidcReactiveOAuth2UserService;
-import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
-import org.springframework.security.oauth2.client.userinfo.ReactiveOAuth2UserService;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
+import org.springframework.security.web.server.savedrequest.NoOpServerRequestCache;
+import reactor.core.publisher.Mono;
 
 @EnableWebFluxSecurity
+@ComponentScan(basePackages = {
+        "com.metajou.authserver.security",
+        "com.metajou.authserver.util"
+})
 public class SecurityConfig {
 
+    private final CustomOauth2LoginSuccessHandler customOauth2LoginSuccessHandler;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @Autowired
+    public SecurityConfig(CustomOauth2LoginSuccessHandler customOauth2LoginSuccessHandler, JwtUtil jwtUtil) {
+        this.customOauth2LoginSuccessHandler = customOauth2LoginSuccessHandler;
+        jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtil);
+    }
 
     @Bean
     SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-        return http.csrf().disable()
-                .httpBasic().disable()
-                .formLogin().disable()
-                .authorizeExchange()
+
+        //TODO Make Stateless
+        //http.requestCache().requestCache(NoOpServerRequestCache.getInstance());
+        http.securityContextRepository(NoOpServerSecurityContextRepository.getInstance());
+
+        //TODO OAuth2Login
+        http.oauth2Login(Customizer.withDefaults())
+                .oauth2Login(oAuth2LoginSpec -> {
+                    oAuth2LoginSpec.authenticationSuccessHandler(customOauth2LoginSuccessHandler);
+                });
+
+        //TODO ADD CUSTOM Filter
+        http.addFilterBefore(jwtAuthenticationFilter, SecurityWebFiltersOrder.OAUTH2_AUTHORIZATION_CODE);
+
+        //TODO ETC
+        http.csrf().disable();
+        http.formLogin().disable();
+        http.logout().disable();
+
+        return http.authorizeExchange()
                 .pathMatchers("/api/**").authenticated()
                 .anyExchange().permitAll()
-                .and().oauth2Login(Customizer.withDefaults())
-                .logout().logoutUrl("/account/logout")
                 .and().build();
     }
+
 }

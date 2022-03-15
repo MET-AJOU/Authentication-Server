@@ -1,4 +1,4 @@
-package com.metajou.authserver.entity.oauth;
+package com.metajou.authserver.entity.oauth2;
 
 import org.springframework.data.r2dbc.convert.EnumWriteSupport;
 
