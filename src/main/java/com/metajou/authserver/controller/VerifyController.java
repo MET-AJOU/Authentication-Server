@@ -1,8 +1,10 @@
 package com.metajou.authserver.controller;
 
 import com.metajou.authserver.entity.auth.CustomUser;
+import com.metajou.authserver.entity.auth.Role;
 import com.metajou.authserver.entity.verify.dto.AjouEmailVerifyRequest;
 import com.metajou.authserver.entity.verify.dto.VerifyTokenRequest;
+import com.metajou.authserver.service.AuthInfoService;
 import com.metajou.authserver.service.VerifyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,10 +18,12 @@ import reactor.core.publisher.Mono;
 public class VerifyController {
 
     private final VerifyService verifyService;
+    private final AuthInfoService authInfoService;
 
     @Autowired
-    public VerifyController(VerifyService verifyService) {
+    public VerifyController(VerifyService verifyService, AuthInfoService authInfoService) {
         this.verifyService = verifyService;
+        this.authInfoService = authInfoService;
     }
 
     @PostMapping()
@@ -28,6 +32,8 @@ public class VerifyController {
             @RequestBody VerifyTokenRequest reqData
             ) {
         return verifyService.checkVerifyTokenIsCorrect(user, reqData)
+                .flatMap(boolData -> authInfoService.updateAuthInfoAuthority(user, Role.ROLE_USER)
+                            .map(tmpBoolData -> tmpBoolData && boolData))
                 .map(boolData -> {
                     if(boolData)
                         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("Successed");

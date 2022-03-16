@@ -2,6 +2,7 @@ package com.metajou.authserver.service;
 
 import com.metajou.authserver.entity.auth.CustomUser;
 import com.metajou.authserver.entity.verify.VerifingTokenInfo;
+import com.metajou.authserver.entity.verify.VerifyInfo;
 import com.metajou.authserver.entity.verify.dto.AjouEmailVerifyRequest;
 import com.metajou.authserver.entity.verify.dto.SendEmailDto;
 import com.metajou.authserver.entity.verify.dto.VerifyTokenRequest;
@@ -9,6 +10,7 @@ import com.metajou.authserver.repository.VerifingTokenInfoRepository;
 import com.metajou.authserver.repository.VerifyInfoRepository;
 import com.metajou.authserver.util.EmailUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import reactor.core.publisher.Mono;
 
 import java.util.Random;
@@ -46,7 +48,17 @@ public class VerifyService {
     }
 
     public Mono<Boolean> checkVerifyTokenIsCorrect(CustomUser user, VerifyTokenRequest reqData) {
-        return Mono.just(true);
+        return tokenInfoRepository.findVerifingTokenInfoByUserCode(user.getUserCode())
+                .doOnNext(verifingTokenInfo -> Assert.notNull(verifingTokenInfo, "발급된 토큰 넘버가 없습니다."))
+                .flatMap(verifingTokenInfo -> {
+                    if(verifingTokenInfo.getVerifyToken().equals(reqData.getVerifyToken())) {
+                        return tokenInfoRepository.deleteById(verifingTokenInfo.getId())
+                                .then(verifyInfoRepository.save(
+                                        new VerifyInfo(verifingTokenInfo.getUserCode(), verifingTokenInfo.getVerifyEmail())
+                                )).map(verifyInfo -> verifyInfo != null);
+                    }
+                    return Mono.just(false);
+                });
     }
 
     protected Mono<VerifingTokenInfo> uploadVerifyTokenInfo(CustomUser user, String verifyEmail) {

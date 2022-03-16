@@ -49,7 +49,8 @@ public class AuthInfo {
     public List<Role> extractAuthorities() {
         String[] roleStr = this.authorities.split(",");
         return Arrays.stream(roleStr).map(Role::valueOf)
-                .filter(role -> role!=null).collect(Collectors.toList());
+                .filter(role -> role!=null).collect(Collectors.toSet())
+                .stream().collect(Collectors.toList());
     }
 
     public void addAuthorities(@NonNull Role role) {
