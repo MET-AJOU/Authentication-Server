@@ -1,10 +1,13 @@
 package com.metajou.authserver.entity.verify.dto;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 public class AjouEmailVerifyRequest {
-    private final String userId;
+    private final String ajouUserId;
+
+    public AjouEmailVerifyRequest(@JsonProperty("AjouUserId") String ajouUserId) {
+        this.ajouUserId = ajouUserId;
+    }
 }

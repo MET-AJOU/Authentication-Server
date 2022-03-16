@@ -2,14 +2,13 @@ package com.metajou.authserver.controller;
 
 import com.metajou.authserver.entity.auth.CustomUser;
 import com.metajou.authserver.entity.verify.dto.AjouEmailVerifyRequest;
+import com.metajou.authserver.entity.verify.dto.VerifyTokenRequest;
 import com.metajou.authserver.service.VerifyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -23,12 +22,33 @@ public class VerifyController {
         this.verifyService = verifyService;
     }
 
-    @GetMapping("/ajouemail")
+    @PostMapping()
+    public Mono<ResponseEntity<String>> makeVerify(
+            @AuthenticationPrincipal CustomUser user,
+            @RequestBody VerifyTokenRequest reqData
+            ) {
+        return verifyService.checkVerifyTokenIsCorrect(user, reqData)
+                .map(boolData -> {
+                    if(boolData)
+                        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("Successed");
+                    return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("Failed");
+                });
+    }
+
+    @GetMapping("/send/ajouemail")
     public Mono<ResponseEntity<String>> getVerifyAjouEmail(
             @AuthenticationPrincipal CustomUser user,
             @RequestBody AjouEmailVerifyRequest reqData
     ) {
-        return Mono.just(ResponseEntity.ok(reqData.getUserId()));
+        return verifyService.sendVerifyTokenToAjouEmail(user, reqData)
+                .map(boolData -> {
+                    if(boolData) {
+                        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+                                .body("email is sended!");
+                    }
+                    return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
+                            .body("email is not sended!");
+                });
     }
 
 }

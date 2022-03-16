@@ -29,7 +29,7 @@ public class EmailUtils {
     }
 
     private boolean sendByBlocking(SendEmailDto dto) {
-        if (StringUtils.hasText(dto.getTo())) return false; // 수신자가 없을 경우 종료
+        if (!StringUtils.hasText(dto.getTo())) return false; // 수신자가 없을 경우 종료
 
         try {
             MimeMessage message = javaMailSender.createMimeMessage();

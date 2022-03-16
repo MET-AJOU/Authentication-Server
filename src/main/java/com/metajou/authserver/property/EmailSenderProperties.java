@@ -23,4 +23,6 @@ public class EmailSenderProperties {
     private Boolean smtpAuth;
     @Value("${spring.mail.properties.mail.smtp.starttls.enable}")
     private Boolean tlsEnable;
+    @Value("${spring.mail.propertirs.mail.smtp.ssl.enable}")
+    private Boolean sslEnable;
 }

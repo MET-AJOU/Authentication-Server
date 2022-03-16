@@ -15,6 +15,17 @@ public class SendEmailDto {
     private String data;
 
     /**
+     * @param ajouReq 수신자(1인 고정),(자동으로 @ajou.ac.kr을 추가)
+     * @param subject 제목
+     * @param data 내용
+     */
+    public SendEmailDto(AjouEmailVerifyRequest ajouReq, String subject, String data) {
+        this.to = ajouReq.getAjouUserId() + "@ajou.ac.kr";
+        this.subject = subject;
+        this.data = data;
+    }
+
+    /**
      * @param to 수신자(여러명일 경우 ',' 구분)
      * @param subject 제목
      * @param data 내용

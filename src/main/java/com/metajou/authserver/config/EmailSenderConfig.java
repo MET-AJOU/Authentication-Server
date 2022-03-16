@@ -17,7 +17,6 @@ import java.util.Properties;
 public class EmailSenderConfig {
 
     private final EmailSenderProperties emailSenderProperties;
-    private final Properties properties = new Properties();
 
     @Autowired
     public EmailSenderConfig(EmailSenderProperties emailSenderProperties) {
@@ -32,14 +31,16 @@ public class EmailSenderConfig {
         javaMailSender.setPassword(this.emailSenderProperties.getPassword());
         javaMailSender.setPort(this.emailSenderProperties.getPort());
 
+        final Properties properties = javaMailSender.getJavaMailProperties();
         properties.put("mail.smtp.socketFactory.port", this.emailSenderProperties.getPort());
         properties.put("mail.smtp.auth", this.emailSenderProperties.getSmtpAuth());
         properties.put("mail.smtp.starttls.enable", this.emailSenderProperties.getTlsEnable());
         properties.put("mail.smtp.starttls.required", true);
         properties.put("mail.smtp.socketFactory.fallback", false);
-        properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 
-        javaMailSender.setJavaMailProperties(properties);
+        //properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        properties.put("mail.smtp.ssl.enable", false); //문제시 true로 (대신 ssl 인증 에러가 남)
+
         javaMailSender.setDefaultEncoding("UTF-8");
 
         return javaMailSender;

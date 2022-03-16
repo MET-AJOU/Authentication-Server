@@ -5,27 +5,31 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.time.LocalDateTime;
-
 @Data
-@ToString
-@Table("VerifyInfo")
+@Table("VerifingTokenInfo")
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
-public class VerifyInfo {
+public class VerifingTokenInfo {
     @Id
     private Long id;
     @Column("user_code")
     private String userCode;
     @Column("verify_email")
     private String verifyEmail;
-    @Column("verify_time")
-    private LocalDateTime verifyTime;
+    @Column("verify_token")
+    private String verifyToken;
 
-    public VerifyInfo(String userCode, String verifyEmail) {
+    public VerifingTokenInfo(String userCode, String verifyEmail) {
         this.userCode = userCode;
         this.verifyEmail = verifyEmail;
-        this.verifyTime = LocalDateTime.now();
     }
+
+    public VerifingTokenInfo(String userCode, String verifyEmail, String verifyToken) {
+        this.userCode = userCode;
+        this.verifyEmail = verifyEmail;
+        this.verifyToken = verifyToken;
+    }
+
 }

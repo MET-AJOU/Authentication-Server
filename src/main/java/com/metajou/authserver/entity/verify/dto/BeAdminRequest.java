@@ -8,7 +8,7 @@ import lombok.Getter;
 public class BeAdminRequest {
     private final String serverRootToken;
 
-    public BeAdminRequest(@JsonProperty("serverRootToken") String serverRootToken) {
+    public BeAdminRequest(@JsonProperty("ServerRootToken") String serverRootToken) {
         this.serverRootToken = serverRootToken;
     }
 }
