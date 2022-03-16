@@ -1,16 +1,14 @@
 package com.metajou.authserver.entity.auth;
 
+import com.metajou.authserver.entity.auth.dto.Token;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @ToString
 public class CustomUser implements UserDetails {
@@ -20,7 +18,7 @@ public class CustomUser implements UserDetails {
     @Getter
     private final String userEmail;
     @Getter
-    private final String accessToken;
+    private final Token token;
     private final ArrayList<? extends GrantedAuthority> authorities;
     @Setter
     private Boolean isAuthenticated = true;
@@ -36,7 +34,7 @@ public class CustomUser implements UserDetails {
     public CustomUser(String userCode, String userEmail, String accessToken, ArrayList<? extends GrantedAuthority> authorities) {
         this.userCode = userCode;
         this.userEmail = userEmail;
-        this.accessToken = accessToken;
+        this.token = new Token(accessToken);
         this.authorities = authorities;
     }
 

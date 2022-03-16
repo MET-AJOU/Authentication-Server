@@ -2,7 +2,7 @@ package com.metajou.authserver.config;
 
 import com.metajou.authserver.security.CustomOauth2LoginSuccessHandler;
 import com.metajou.authserver.security.JwtAuthenticationFilter;
-import com.metajou.authserver.util.JwtUtil;
+import com.metajou.authserver.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -10,11 +10,8 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
-import org.springframework.security.web.server.savedrequest.NoOpServerRequestCache;
-import reactor.core.publisher.Mono;
 
 @EnableWebFluxSecurity
 @ComponentScan(basePackages = {
@@ -27,9 +24,9 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Autowired
-    public SecurityConfig(CustomOauth2LoginSuccessHandler customOauth2LoginSuccessHandler, JwtUtil jwtUtil) {
+    public SecurityConfig(CustomOauth2LoginSuccessHandler customOauth2LoginSuccessHandler, JwtUtils jwtUtils) {
         this.customOauth2LoginSuccessHandler = customOauth2LoginSuccessHandler;
-        jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtil);
+        jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtils);
     }
 
     @Bean
@@ -54,7 +51,9 @@ public class SecurityConfig {
         http.logout().disable();
 
         return http.authorizeExchange()
+                .pathMatchers("/admin/makemeadmin").permitAll()
                 .pathMatchers("/api/**").authenticated()
+                .pathMatchers("/admin/**").hasRole("ADMIN")
                 .anyExchange().permitAll()
                 .and().build();
     }

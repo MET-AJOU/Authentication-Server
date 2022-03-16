@@ -1,11 +1,11 @@
 package com.metajou.authserver.service;
 
 import com.metajou.authserver.entity.auth.AuthInfo;
+import com.metajou.authserver.entity.auth.CustomUser;
+import com.metajou.authserver.entity.auth.Role;
 import com.metajou.authserver.entity.oauth2.OAuth2UserInfo;
 import com.metajou.authserver.repository.AuthInfoRepository;
-import com.metajou.authserver.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -25,6 +25,13 @@ public class AuthInfoService {
                 .findAuthInfoByUserIdAndProvider(authInfo.getUserId(), authInfo.getProvider())
                 .switchIfEmpty(Mono.defer(() -> authInfoRepository.save(authInfo)));
         return authInfoMono;
+    }
+
+    public Mono<Boolean> updateAuthInfoAuthority(CustomUser user, Role role) {
+        return authInfoRepository.findAuthInfoByUserCode(user.getUserCode())
+                .doOnNext(authInfo -> authInfo.addAuthorities(role))
+                .flatMap(authInfo -> authInfoRepository.save(authInfo))
+                .map(authInfo -> authInfo != null);
     }
 
 }
