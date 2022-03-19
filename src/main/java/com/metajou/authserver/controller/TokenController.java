@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import java.util.Date;
@@ -32,11 +33,6 @@ public class TokenController {
     @GetMapping()
     public Mono<ResponseEntity<String>> getTokenHome() {
         return Mono.just(ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("Hello Token!"));
-    }
-
-    @GetMapping("/authorities")
-    public Mono<ResponseEntity<Object>> getAuthorities(@AuthenticationPrincipal CustomUser user) {
-        return Mono.just(ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(user.getAuthorities()));
     }
 
     @GetMapping("/expiredtime")

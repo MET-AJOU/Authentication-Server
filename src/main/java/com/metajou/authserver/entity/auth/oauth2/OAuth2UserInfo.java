@@ -1,4 +1,4 @@
-package com.metajou.authserver.entity.oauth2;
+package com.metajou.authserver.entity.auth.oauth2;
 
 import com.metajou.authserver.entity.auth.AuthInfo;
 import lombok.Getter;

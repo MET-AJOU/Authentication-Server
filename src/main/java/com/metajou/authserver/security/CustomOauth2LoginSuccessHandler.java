@@ -1,6 +1,6 @@
 package com.metajou.authserver.security;
 
-import com.metajou.authserver.entity.oauth2.OAuth2UserInfo;
+import com.metajou.authserver.entity.auth.oauth2.OAuth2UserInfo;
 import com.metajou.authserver.service.AuthInfoService;
 import com.metajou.authserver.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;

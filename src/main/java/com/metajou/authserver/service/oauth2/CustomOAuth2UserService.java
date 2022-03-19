@@ -1,6 +1,6 @@
 package com.metajou.authserver.service.oauth2;
 
-import com.metajou.authserver.entity.oauth2.OAuth2UserInfo;
+import com.metajou.authserver.entity.auth.oauth2.OAuth2UserInfo;
 import org.springframework.security.oauth2.client.userinfo.DefaultReactiveOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;

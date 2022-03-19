@@ -51,6 +51,7 @@ public class SecurityConfig {
         http.logout().disable();
 
         return http.authorizeExchange()
+                .pathMatchers("/api").permitAll()
                 .pathMatchers("/admin/makemeadmin").permitAll()
                 .pathMatchers("/api/**").authenticated()
                 .pathMatchers("/admin/**").hasRole("ADMIN")

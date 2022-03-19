@@ -3,7 +3,7 @@ package com.metajou.authserver.service;
 import com.metajou.authserver.entity.auth.AuthInfo;
 import com.metajou.authserver.entity.auth.CustomUser;
 import com.metajou.authserver.entity.auth.Role;
-import com.metajou.authserver.entity.oauth2.OAuth2UserInfo;
+import com.metajou.authserver.entity.auth.oauth2.OAuth2UserInfo;
 import com.metajou.authserver.repository.AuthInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
