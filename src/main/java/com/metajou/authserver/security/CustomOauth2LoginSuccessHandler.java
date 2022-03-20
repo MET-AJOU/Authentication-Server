@@ -37,15 +37,13 @@ public class CustomOauth2LoginSuccessHandler extends RedirectServerAuthenticatio
         try {
             OAuth2AuthenticationToken oAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
             OAuth2UserInfo oAuth2UserInfo = (OAuth2UserInfo) oAuth2AuthenticationToken.getPrincipal();
-            System.err.println(webServerUrl);
             return authInfoService.registerAuthInfo(oAuth2UserInfo).doOnNext(authInfo -> {
                 String token = jwtUtils.generateToken(authInfo);
-                webFilterExchange.getExchange().getResponse()
-                        .addCookie(
-                                jwtUtils.makeAddingResponseCookieAccessToken(token)
-                        );
+                jwtUtils.addCookieAccessTokenToResponse(
+                        webFilterExchange.getExchange().getResponse(), token
+                );
             }).then(serverRedirectStrategy.sendRedirect(webFilterExchange.getExchange(),
-                    URI.create(webServerUrl))
+                    URI.create(webServerUrl + "/map"))
             );
         }
         catch (Exception e) {

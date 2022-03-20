@@ -47,6 +47,7 @@ public class SecurityConfig {
 
         //TODO ETC
         http.csrf().disable();
+        http.cors().and();
         http.formLogin().disable();
         http.logout().disable();
 

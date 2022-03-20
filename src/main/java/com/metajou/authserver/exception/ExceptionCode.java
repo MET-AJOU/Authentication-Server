@@ -2,11 +2,9 @@ package com.metajou.authserver.exception;
 
 import com.metajou.authserver.exception.custom.GlobalException;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @AllArgsConstructor
-@Getter
 public enum ExceptionCode {
 
     // 인증문제
@@ -17,4 +15,8 @@ public enum ExceptionCode {
 
 
     private final GlobalException globalException;
+
+    public GlobalException build() {
+        return globalException;
+    }
 }

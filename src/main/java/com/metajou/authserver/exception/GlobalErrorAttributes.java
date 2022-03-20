@@ -1,10 +1,8 @@
 package com.metajou.authserver.exception;
 
 import com.metajou.authserver.exception.custom.GlobalException;
-import lombok.Builder;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
@@ -18,7 +16,6 @@ public class GlobalErrorAttributes extends DefaultErrorAttributes {
         Map<String, Object> map = super.getErrorAttributes(request, options);
         map.remove("error");
         map.remove("path");
-        map.remove("timestamp");
 
         Throwable throwable = getError(request);
 

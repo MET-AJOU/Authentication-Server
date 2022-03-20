@@ -16,7 +16,6 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/verify")
 public class VerifyController {
-
     private final VerifyService verifyService;
     private final AuthInfoService authInfoService;
 
@@ -41,7 +40,7 @@ public class VerifyController {
                 });
     }
 
-    @GetMapping("/send/ajouemail")
+    @PostMapping("/send/ajouemail")
     public Mono<ResponseEntity<String>> getVerifyAjouEmail(
             @AuthenticationPrincipal CustomUser user,
             @RequestBody AjouEmailVerifyRequest reqData

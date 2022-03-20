@@ -26,7 +26,7 @@ public class MainController {
 
     @GetMapping
     public Mono<ResponseEntity<Void>> getHome() {
-        return Mono.error(ExceptionCode.NOT_FOUND_404.getGlobalException());
+        return Mono.error(ExceptionCode.NOT_FOUND_404.build());
     }
 
     ///oauth2/authorization/google <= login
