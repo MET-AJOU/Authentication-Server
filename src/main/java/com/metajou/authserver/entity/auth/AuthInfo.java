@@ -1,6 +1,6 @@
 package com.metajou.authserver.entity.auth;
 
-import com.metajou.authserver.entity.oauth2.OAuth2Provider;
+import com.metajou.authserver.entity.auth.oauth2.OAuth2Provider;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;

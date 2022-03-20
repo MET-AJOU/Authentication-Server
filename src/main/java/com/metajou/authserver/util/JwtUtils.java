@@ -9,6 +9,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -16,6 +17,7 @@ import org.springframework.util.Assert;
 import javax.annotation.PostConstruct;
 import java.security.Key;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtils {
@@ -26,11 +28,13 @@ public class JwtUtils {
     private String expirationTime;
     @Value("${spring.project.jjwt.tokenname}")
     private String tokenName;
+    @Value("${spring.service.root.domain}")
+    private String serviceDomains;
 
     private Key key;
 
     @PostConstruct
-    public void init() {
+    public void initialize() {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
@@ -107,16 +111,21 @@ public class JwtUtils {
         return validateToken(token);
     }
 
-    public ResponseCookie makeAddingResponseCookieAccessToken(String token) {
+    public void addCookieAccessTokenToResponse(ServerHttpResponse res, String token) {
+        res.addCookie(makeAddingResponseCookieAccessToken(token));
+    }
+
+    protected ResponseCookie makeAddingResponseCookieAccessToken(String token) {
         return ResponseCookie.from(tokenName, token)
                 .path("/")
-                .sameSite("Lax").build();
+                .domain(serviceDomains)
+                .build();
     }
 
     public ResponseCookie makeDeletingResponseCookieAccessToken() {
         return ResponseCookie.from(tokenName, null)
                 .maxAge(0).path("/")
-                .sameSite("Lax").build();
+                .build();
     }
 
 }

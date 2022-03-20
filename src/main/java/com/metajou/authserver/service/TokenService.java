@@ -28,7 +28,10 @@ public class TokenService {
             return authInfoRepository.findAuthInfoByUserCode(user.getUserCode())
                     .map(authInfo -> {
                         String token = jwtUtils.generateToken(authInfo);
-                        response.addCookie(jwtUtils.makeAddingResponseCookieAccessToken(token));
+                        jwtUtils.addCookieAccessTokenToResponse(
+                                response,
+                                token
+                        );
                         return new Token(token);
                     });
         }

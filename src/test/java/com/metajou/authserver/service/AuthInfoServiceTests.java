@@ -1,10 +1,9 @@
 package com.metajou.authserver.service;
 
 import com.metajou.authserver.config.R2dbcConfig;
-import com.metajou.authserver.config.SecurityConfig;
 import com.metajou.authserver.entity.auth.AuthInfo;
 import com.metajou.authserver.entity.auth.Role;
-import com.metajou.authserver.entity.oauth2.OAuth2Provider;
+import com.metajou.authserver.entity.auth.oauth2.OAuth2Provider;
 import com.metajou.authserver.property.CustomR2dbcProperties;
 import com.metajou.authserver.repository.AuthInfoRepository;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;

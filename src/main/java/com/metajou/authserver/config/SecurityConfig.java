@@ -47,10 +47,12 @@ public class SecurityConfig {
 
         //TODO ETC
         http.csrf().disable();
+        http.cors().and();
         http.formLogin().disable();
         http.logout().disable();
 
         return http.authorizeExchange()
+                .pathMatchers("/api").permitAll()
                 .pathMatchers("/admin/makemeadmin").permitAll()
                 .pathMatchers("/api/**").authenticated()
                 .pathMatchers("/admin/**").hasRole("ADMIN")
