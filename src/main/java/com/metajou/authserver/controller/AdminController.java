@@ -2,7 +2,7 @@ package com.metajou.authserver.controller;
 
 import com.metajou.authserver.entity.auth.CustomUser;
 import com.metajou.authserver.entity.auth.dto.Token;
-import com.metajou.authserver.entity.verify.dto.BeAdminRequest;
+import com.metajou.authserver.entity.verify.req.BeAdminRequest;
 import com.metajou.authserver.service.AdminService;
 import com.metajou.authserver.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;

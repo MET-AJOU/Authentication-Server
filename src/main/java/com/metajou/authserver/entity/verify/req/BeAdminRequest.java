@@ -1,4 +1,4 @@
-package com.metajou.authserver.entity.verify.dto;
+package com.metajou.authserver.entity.verify.req;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
