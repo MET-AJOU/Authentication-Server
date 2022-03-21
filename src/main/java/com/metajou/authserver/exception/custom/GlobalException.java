@@ -18,4 +18,8 @@ public class GlobalException extends ResponseStatusException {
     public GlobalException(HttpStatus status, String reason, Throwable cause) {
         super(status, reason, cause);
     }
+
+    public Boolean isGlobalException() {
+        return true;
+    }
 }

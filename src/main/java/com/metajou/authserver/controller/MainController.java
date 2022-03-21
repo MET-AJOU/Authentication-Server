@@ -1,5 +1,7 @@
 package com.metajou.authserver.controller;
 
+import com.metajou.authserver.entity.CustomResponse;
+import com.metajou.authserver.entity.auth.dto.Token;
 import com.metajou.authserver.exception.ExceptionCode;
 import com.metajou.authserver.service.AuthInfoService;
 import com.metajou.authserver.service.TokenService;
@@ -39,4 +41,18 @@ public class MainController {
                 .build());
     }
 
+    @GetMapping("/testresponse")
+    public Mono<ResponseEntity<CustomResponse>> testResApi() {
+        return Mono.just(ResponseEntity.ok()
+                .body(
+                        new CustomResponse(new Token("mimimi"))
+                                .injectExceptionCode(ExceptionCode.NOT_FOUND_404)
+                                .build()
+                ));
+    }
+
+    @GetMapping("/testerror")
+    public Mono<ResponseEntity<CustomResponse>> testErrorApi() {
+        return Mono.error(ExceptionCode.NO_VERIFIED_USER.build());
+    }
 }
