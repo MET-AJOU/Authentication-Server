@@ -1,21 +1,19 @@
 package com.metajou.authserver.controller;
 
 import com.metajou.authserver.entity.auth.CustomUser;
-import com.metajou.authserver.entity.auth.dto.Token;
+import com.metajou.authserver.entity.response.BaseResponse;
+import com.metajou.authserver.entity.token.AuthInfoRes;
 import com.metajou.authserver.service.AuthInfoService;
 import com.metajou.authserver.service.TokenService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
-
-import java.util.Date;
 
 @RestController
 @RequestMapping("/api/token")
@@ -31,34 +29,26 @@ public class TokenController {
     }
 
     @GetMapping()
-    public Mono<ResponseEntity<String>> getTokenHome() {
-        return Mono.just(ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("Hello Token!"));
-    }
-
-    @GetMapping("/expiredtime")
-    public Mono<ResponseEntity<Date>> getTokenExpireTime(@AuthenticationPrincipal CustomUser user) {
-        return tokenService.getExpiredTime(user).map(date -> {
-            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
-                    .body(date);
-        });
+    public Mono<ResponseEntity> getToken(@AuthenticationPrincipal CustomUser user) {
+        return BaseResponse.builder()
+                .body(user.getToken())
+                .build().toMonoEntity();
     }
 
     @GetMapping("/mine")
-    public Mono<ResponseEntity<Token>> getUserAuthInfo(@AuthenticationPrincipal CustomUser user) {
-        return Mono.just(
-                ResponseEntity.ok()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(new Token(user.getToken().getTokenValue())));
+    @ApiOperation(value = "현재 나의 인증 정보를 불러옵니다.", notes = "인증이 필요함.")
+    public Mono<ResponseEntity> getUserAuthInfo(@AuthenticationPrincipal CustomUser user) {
+        return BaseResponse.builder()
+                .body(tokenService.getSessionAuthInfo(user))
+                .build().toMonoEntity();
     }
 
     @GetMapping("/refresh")
-    public Mono<ResponseEntity<Token>> getRefreshToken(@AuthenticationPrincipal CustomUser user, ServerHttpResponse response) {
-        Mono<Token> refreshMono = tokenService.refreshAccessTokenInCookie(user, response);
-        return refreshMono.map(token ->
-                ResponseEntity.ok()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(token)
-        );
+    @ApiOperation(value = "쿠키에 저장된 서비스 AccessToken을 재발급하여 저장합니다.", notes = "인증이 필요함.")
+    public Mono<ResponseEntity> getRefreshToken(@AuthenticationPrincipal CustomUser user, ServerHttpResponse response) {
+        return BaseResponse.builder()
+                .body(tokenService.refreshAccessTokenInCookie(user, response))
+                .build().toMonoEntity();
     }
 
 }

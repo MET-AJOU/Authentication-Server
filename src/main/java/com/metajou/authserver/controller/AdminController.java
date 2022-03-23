@@ -1,7 +1,7 @@
 package com.metajou.authserver.controller;
 
 import com.metajou.authserver.entity.auth.CustomUser;
-import com.metajou.authserver.entity.auth.dto.Token;
+import com.metajou.authserver.entity.Token;
 import com.metajou.authserver.entity.verify.req.BeAdminRequest;
 import com.metajou.authserver.service.AdminService;
 import com.metajou.authserver.service.TokenService;
@@ -34,22 +34,22 @@ public class AdminController {
         return Mono.just(ResponseEntity.ok("Hello Admin!"));
     }
 
-    @GetMapping("/makemeadmin")
-    public Mono<ResponseEntity<Token>> getMakeMeAdmin(
-            @AuthenticationPrincipal CustomUser user,
-            @RequestBody BeAdminRequest req,
-            ServerHttpResponse response
-    ) {
-        return adminService.beAdmin(user, req)
-                .flatMap(isAvail -> {
-                    if (isAvail)
-                        return tokenService.refreshAccessTokenInCookie(user, response);
-                    else
-                        return Mono.just(user.getToken());
-                }).map(token -> ResponseEntity.ok()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(token)
-                );
-    }
+//    @GetMapping("/makemeadmin")
+//    public Mono<ResponseEntity<Token>> getMakeMeAdmin(
+//            @AuthenticationPrincipal CustomUser user,
+//            @RequestBody BeAdminRequest req,
+//            ServerHttpResponse response
+//    ) {
+//        return adminService.beAdmin(user, req)
+//                .flatMap(isAvail -> {
+//                    if (isAvail)
+//                        return tokenService.refreshAccessTokenInCookie(user, response);
+//                    else
+//                        return Mono.just(user.getToken());
+//                }).map(token -> ResponseEntity.ok()
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .body(token)
+//                );
+//    }
 
 }

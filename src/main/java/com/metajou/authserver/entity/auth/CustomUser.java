@@ -1,6 +1,6 @@
 package com.metajou.authserver.entity.auth;
 
-import com.metajou.authserver.entity.auth.dto.Token;
+import com.metajou.authserver.entity.Token;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
