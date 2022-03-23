@@ -2,8 +2,8 @@ package com.metajou.authserver.controller;
 
 import com.metajou.authserver.entity.auth.CustomUser;
 import com.metajou.authserver.entity.auth.Role;
-import com.metajou.authserver.entity.verify.dto.AjouEmailVerifyRequest;
-import com.metajou.authserver.entity.verify.dto.VerifyTokenRequest;
+import com.metajou.authserver.entity.verify.req.AjouEmailVerifyRequest;
+import com.metajou.authserver.entity.verify.req.VerifyTokenRequest;
 import com.metajou.authserver.service.AuthInfoService;
 import com.metajou.authserver.service.VerifyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +30,7 @@ public class VerifyController {
             @AuthenticationPrincipal CustomUser user,
             @RequestBody VerifyTokenRequest reqData
             ) {
+
         return verifyService.checkVerifyTokenIsCorrect(user, reqData)
                 .flatMap(boolData -> authInfoService.updateAuthInfoAuthority(user, Role.ROLE_USER)
                             .map(tmpBoolData -> tmpBoolData && boolData))

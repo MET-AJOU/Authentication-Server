@@ -21,6 +21,8 @@ public class CustomOauth2LoginSuccessHandler extends RedirectServerAuthenticatio
 
     @Value("${spring.client.webserver.url}")
     private String webServerUrl;
+    @Value("${spring.security.oauth2.client.redirect.url}")
+    private String redirectUrl;
 
     private final ServerRedirectStrategy serverRedirectStrategy = new DefaultServerRedirectStrategy();
     private final AuthInfoService authInfoService;
@@ -43,7 +45,7 @@ public class CustomOauth2LoginSuccessHandler extends RedirectServerAuthenticatio
                         webFilterExchange.getExchange().getResponse(), token
                 );
             }).then(serverRedirectStrategy.sendRedirect(webFilterExchange.getExchange(),
-                    URI.create(webServerUrl + "/map"))
+                    URI.create(redirectUrl))
             );
         }
         catch (Exception e) {

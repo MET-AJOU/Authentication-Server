@@ -16,6 +16,7 @@ public class GlobalErrorAttributes extends DefaultErrorAttributes {
         Map<String, Object> map = super.getErrorAttributes(request, options);
         map.remove("error");
         map.remove("path");
+        map.put("state", false);
 
         Throwable throwable = getError(request);
 
@@ -27,8 +28,8 @@ public class GlobalErrorAttributes extends DefaultErrorAttributes {
             return map;
         }
 
-        map.put("res", "");
-        map.put("message", throwable.getMessage());
+        map.put("res", null);
+        map.put("message", throwable.getLocalizedMessage());
         map.put("status", 500);
         return map;
     }

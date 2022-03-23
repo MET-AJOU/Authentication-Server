@@ -1,5 +1,8 @@
 package com.metajou.authserver.controller;
 
+import com.metajou.authserver.entity.response.BaseResponse;
+import com.metajou.authserver.entity.response.ResponseWrapper;
+import com.metajou.authserver.entity.auth.dto.Token;
 import com.metajou.authserver.exception.ExceptionCode;
 import com.metajou.authserver.service.AuthInfoService;
 import com.metajou.authserver.service.TokenService;
@@ -32,11 +35,23 @@ public class MainController {
     ///oauth2/authorization/google <= login
 
     @GetMapping("/api")
-    public Mono<ResponseEntity<Void>> getSwaggerHome() {
+    public Mono<ResponseEntity> getSwaggerHome() {
         return Mono.just(ResponseEntity
                 .status(HttpStatus.TEMPORARY_REDIRECT)
                 .location(URI.create("/swagger-ui/index.html"))
                 .build());
     }
 
+    @GetMapping("/testresponse")
+    public Mono<ResponseEntity> testResApi() {
+        return BaseResponse.builder()
+                .body(new Token("asd"))
+                .except(ExceptionCode.EXPIRED_TOKEN)
+                .build().toMonoEntity();
+    }
+
+    @GetMapping("/testerror")
+    public Mono<ResponseEntity<ResponseWrapper>> testErrorApi() {
+        return Mono.error(ExceptionCode.NO_VERIFIED_USER.build());
+    }
 }

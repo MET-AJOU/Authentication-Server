@@ -1,12 +1,10 @@
 package com.metajou.authserver.service;
 
-import com.metajou.authserver.entity.auth.AuthInfo;
 import com.metajou.authserver.entity.auth.CustomUser;
 import com.metajou.authserver.entity.auth.Role;
-import com.metajou.authserver.entity.verify.dto.BeAdminRequest;
+import com.metajou.authserver.entity.verify.req.BeAdminRequest;
 import com.metajou.authserver.repository.AuthInfoRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import reactor.core.publisher.Mono;

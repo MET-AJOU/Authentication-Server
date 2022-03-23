@@ -1,5 +1,6 @@
 package com.metajou.authserver.entity.verify.dto;
 
+import com.metajou.authserver.entity.verify.req.AjouEmailVerifyRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
