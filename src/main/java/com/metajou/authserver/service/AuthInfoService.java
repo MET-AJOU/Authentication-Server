@@ -28,10 +28,14 @@ public class AuthInfoService {
     }
 
     public Mono<Boolean> updateAuthInfoAuthority(CustomUser user, Role role) {
-        return authInfoRepository.findAuthInfoByUserCode(user.getUserCode())
+        return getAuthInfo(user)
                 .doOnNext(authInfo -> authInfo.addAuthorities(role))
                 .flatMap(authInfo -> authInfoRepository.save(authInfo))
                 .map(authInfo -> authInfo != null);
+    }
+
+    protected Mono<AuthInfo> getAuthInfo(CustomUser user) {
+        return authInfoRepository.findAuthInfoByUserCode(user.getUserCode());
     }
 
 }

@@ -1,53 +1,66 @@
 package com.metajou.authserver.service;
 
+import com.metajou.authserver.entity.auth.AuthInfo;
 import com.metajou.authserver.entity.auth.CustomUser;
-import com.metajou.authserver.entity.auth.dto.Token;
+import com.metajou.authserver.entity.token.AccessToken;
+import com.metajou.authserver.entity.token.AuthInfoRes;
+import com.metajou.authserver.entity.verify.VerifyInfo;
+import com.metajou.authserver.exception.ExceptionCode;
 import com.metajou.authserver.repository.AuthInfoRepository;
+import com.metajou.authserver.repository.VerifyInfoRepository;
 import com.metajou.authserver.util.JwtUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.util.Date;
-
 @Service
+@AllArgsConstructor
 public class TokenService {
 
     private final JwtUtils jwtUtils;
     private final AuthInfoRepository authInfoRepository;
+    private final VerifyInfoRepository verifyInfoRepository;
 
-    @Autowired
-    public TokenService(JwtUtils jwtUtils, AuthInfoRepository authInfoRepository) {
-        this.jwtUtils = jwtUtils;
-        this.authInfoRepository = authInfoRepository;
+    public Mono<AuthInfoRes> getSessionAuthInfo(CustomUser user) {
+        return Mono.zip(getAuthInfo(user), getVerifyInfo(user, false))
+                .flatMap(tuple -> {
+                    AuthInfo authInfo = tuple.getT1();
+                    VerifyInfo verifyInfo = tuple.getT2();
+                    Mono<AuthInfoRes> res = Mono.just(AuthInfoRes.builder()
+                            .user(authInfo.getUserEmail())
+                            .provider(authInfo.getProvider().toString())
+                            .role(authInfo.getAuthorities())
+                            .expiredTime(jwtUtils.getExpirationDateFromToken(user.getToken().getValue()))
+                            .verifiedEmail(verifyInfo.getVerifyEmail())
+                            .build()).doOnNext(authInfoRes -> System.err.println(authInfoRes));
+            return res;
+        });
     }
 
-    public Mono<Token> refreshAccessTokenInCookie(CustomUser user, ServerHttpResponse response) {
-        try {
-            return authInfoRepository.findAuthInfoByUserCode(user.getUserCode())
-                    .map(authInfo -> {
-                        String token = jwtUtils.generateToken(authInfo);
-                        jwtUtils.addCookieAccessTokenToResponse(
-                                response,
-                                token
-                        );
-                        return new Token(token);
-                    });
-        }
-        catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
-        return Mono.empty();
+    public Mono<AccessToken> refreshAccessTokenInCookie(CustomUser user, ServerHttpResponse response) {
+        return getAuthInfo(user).flatMap(authInfo -> {
+            String token = jwtUtils.generateToken(authInfo);
+            jwtUtils.addCookieAccessTokenToResponse(response, token);
+            return Mono.just(AccessToken.builder().accessToken(token).build());
+        });
     }
 
-    public Mono<Date> getExpiredTime(CustomUser user) {
-        return Mono.just(jwtUtils.getExpirationDateFromToken(user.getToken().getTokenValue()));
+    protected Mono<AuthInfo> getAuthInfo(CustomUser user) {
+        return authInfoRepository.findAuthInfoByUserCode(user.getUserCode())
+                .switchIfEmpty(Mono.error(ExceptionCode.NOT_FOUND_AUTHINFO.build()));
     }
 
-    public void deleteAccessTokenInCookie(ServerHttpResponse response) {
-        response.addCookie(jwtUtils.makeDeletingResponseCookieAccessToken());
-        return;
+    protected Mono<VerifyInfo> getVerifyInfo(CustomUser user, boolean throwable) {
+        if(throwable)
+            return getVerifyInfo(user);
+        return verifyInfoRepository.findVerifyInfoByUserCode(user.getUserCode())
+                .switchIfEmpty(Mono.defer(() -> Mono.just(new VerifyInfo(user.getUserCode(), ""))));
+    }
+
+    protected Mono<VerifyInfo> getVerifyInfo(CustomUser user) {
+        return verifyInfoRepository.findVerifyInfoByUserCode(user.getUserCode())
+                .switchIfEmpty(Mono.error(ExceptionCode.NO_VERIFIED_USER.build()));
     }
 
 }

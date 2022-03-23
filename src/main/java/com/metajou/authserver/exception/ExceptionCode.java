@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 public enum ExceptionCode {
 
     // 인증문제
+    NOT_FOUND_AUTHINFO(new GlobalException(HttpStatus.NOT_FOUND, "인증정보가 존재하지 않습니다.")),
     NO_VERIFIED_USER(new GlobalException(HttpStatus.UNAUTHORIZED, "인증받지 않은 유저입니다.")),
     EXPIRED_TOKEN(new GlobalException(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다.")),
 
