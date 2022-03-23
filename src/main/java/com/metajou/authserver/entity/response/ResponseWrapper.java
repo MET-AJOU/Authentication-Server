@@ -21,7 +21,12 @@ public class ResponseWrapper<T> {
 
     public ResponseWrapper(T obj){
         this.res = obj;
-    };
+    }
+
+    public ResponseWrapper(T obj, HttpStatus status) {
+        this.res = obj;
+        this.status = status.value();
+    }
 
     public ResponseWrapper(T obj, ExceptionCode code) {
         this.res = obj;

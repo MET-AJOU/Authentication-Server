@@ -28,4 +28,6 @@ public class VerifyInfo {
         this.verifyEmail = verifyEmail;
         this.verifyTime = LocalDateTime.now();
     }
+
+    public static final VerifyInfo empty = new VerifyInfo(null, null);
 }
