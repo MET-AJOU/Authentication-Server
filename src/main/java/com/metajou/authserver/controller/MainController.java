@@ -18,21 +18,13 @@ import java.net.URI;
 @RestController
 public class MainController {
 
-    private final AuthInfoService authInfoService;
-    private final TokenService tokenService;
-
-    @Autowired
-    public MainController(AuthInfoService authInfoService, TokenService tokenService) {
-        this.authInfoService = authInfoService;
-        this.tokenService = tokenService;
+    @GetMapping("/login/google")
+    public Mono<ResponseEntity> getGoogleLogin() {
+        return Mono.just(ResponseEntity
+                .status(HttpStatus.TEMPORARY_REDIRECT)
+                .location(URI.create("/oauth2/authorization/google"))
+                .build());
     }
-
-    @GetMapping
-    public Mono<ResponseEntity<Void>> getHome() {
-        return Mono.error(ExceptionCode.NOT_FOUND_404.build());
-    }
-
-    ///oauth2/authorization/google <= login
 
     @GetMapping("/api")
     public Mono<ResponseEntity> getSwaggerHome() {
@@ -40,18 +32,5 @@ public class MainController {
                 .status(HttpStatus.TEMPORARY_REDIRECT)
                 .location(URI.create("/swagger-ui/index.html"))
                 .build());
-    }
-
-    @GetMapping("/testresponse")
-    public Mono<ResponseEntity> testResApi() {
-        return BaseResponse.builder()
-                .body(Mono.just(new Token("asd")))
-                .except(ExceptionCode.EXPIRED_TOKEN)
-                .build().toMonoEntity();
-    }
-
-    @GetMapping("/testerror")
-    public Mono<ResponseEntity<ResponseWrapper>> testErrorApi() {
-        return Mono.error(ExceptionCode.NO_VERIFIED_USER.build());
     }
 }

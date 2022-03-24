@@ -25,9 +25,9 @@ public class VerifyService {
     private final VerifyInfoRepository verifyInfoRepository;
     private final VerifingTokenInfoRepository tokenInfoRepository;
     private final EmailUtils emailUtils;
-    private static final String verifyMessageSubject = "[인증코드]";
-    private static final String verifyMessageHead = "안녕하세요. \n";
-    private static final String verifyMessageTail = "\n 감사합니다.";
+    private static final String verifyMessageSubject = "[인증코드] MET:AJOU 이메일 인증입니다.";
+    private static final String verifyMessageHead = "안녕하세요. MET:AJOU입니다.\n이메일 인증 코드를 입니다.\n\n코드: ";
+    private static final String verifyMessageTail = "\n\n감사합니다.";
 
     public VerifyService(VerifyInfoRepository verifyInfoRepository, VerifingTokenInfoRepository tokenInfoRepository, EmailUtils emailUtils) {
         this.verifyInfoRepository = verifyInfoRepository;

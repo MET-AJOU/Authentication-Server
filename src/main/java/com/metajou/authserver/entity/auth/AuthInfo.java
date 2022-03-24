@@ -54,6 +54,8 @@ public class AuthInfo {
     }
 
     public void addAuthorities(@NonNull Role role) {
+        if (extractAuthorities().contains(role))
+            return;
         this.authorities += ("," + role.toString());
     }
 
