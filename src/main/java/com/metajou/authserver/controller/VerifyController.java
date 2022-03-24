@@ -2,8 +2,10 @@ package com.metajou.authserver.controller;
 
 import com.metajou.authserver.entity.auth.CustomUser;
 import com.metajou.authserver.entity.auth.Role;
+import com.metajou.authserver.entity.response.BaseResponse;
 import com.metajou.authserver.entity.verify.req.AjouEmailVerifyRequest;
 import com.metajou.authserver.entity.verify.req.VerifyTokenRequest;
+import com.metajou.authserver.entity.verify.res.VerifingTokenSendResult;
 import com.metajou.authserver.service.AuthInfoService;
 import com.metajou.authserver.service.VerifyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,35 +28,29 @@ public class VerifyController {
     }
 
     @PostMapping()
-    public Mono<ResponseEntity<String>> makeVerify(
+    public Mono<ResponseEntity> makeVerify(
             @AuthenticationPrincipal CustomUser user,
             @RequestBody VerifyTokenRequest reqData
             ) {
-
-        return verifyService.checkVerifyTokenIsCorrect(user, reqData)
-                .flatMap(boolData -> authInfoService.updateAuthInfoAuthority(user, Role.ROLE_USER)
-                            .map(tmpBoolData -> tmpBoolData && boolData))
-                .map(boolData -> {
-                    if(boolData)
-                        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("Successed");
-                    return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body("Failed");
-                });
+        return BaseResponse.builder()
+                .body(verifyService.checkVerifyTokenIsCorrect(user,reqData)
+                        .flatMap(bwrapped -> {
+                            if(bwrapped.getVerifingTokenSendResult())
+                                return authInfoService.updateAuthInfoAuthority(user, Role.ROLE_USER)
+                                        .flatMap(abool -> Mono.just(new VerifingTokenSendResult(abool)));
+                            return Mono.just(bwrapped);
+                        }))
+                .build().toMonoEntity();
     }
 
     @PostMapping("/send/ajouemail")
-    public Mono<ResponseEntity<String>> getVerifyAjouEmail(
+    public Mono<ResponseEntity> getVerifyAjouEmail(
             @AuthenticationPrincipal CustomUser user,
             @RequestBody AjouEmailVerifyRequest reqData
     ) {
-        return verifyService.sendVerifyTokenToAjouEmail(user, reqData)
-                .map(boolData -> {
-                    if(boolData) {
-                        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
-                                .body("email is sended!");
-                    }
-                    return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
-                            .body("email is not sended!");
-                });
+        return BaseResponse.builder()
+                .body(verifyService.sendVerifyTokenToAjouEmail(user, reqData))
+                .build().toMonoEntity();
     }
 
 }

@@ -6,9 +6,13 @@ import com.metajou.authserver.entity.verify.VerifyInfo;
 import com.metajou.authserver.entity.verify.req.AjouEmailVerifyRequest;
 import com.metajou.authserver.entity.verify.dto.SendEmailDto;
 import com.metajou.authserver.entity.verify.req.VerifyTokenRequest;
+import com.metajou.authserver.entity.verify.res.EmailSendResult;
+import com.metajou.authserver.entity.verify.res.VerifingTokenSendResult;
+import com.metajou.authserver.exception.ExceptionCode;
 import com.metajou.authserver.repository.VerifingTokenInfoRepository;
 import com.metajou.authserver.repository.VerifyInfoRepository;
 import com.metajou.authserver.util.EmailUtils;
+import com.nimbusds.oauth2.sdk.device.UserCode;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import reactor.core.publisher.Mono;
@@ -35,41 +39,71 @@ public class VerifyService {
         return emailUtils.send(null);
     }
 
-    public Mono<Boolean> sendVerifyTokenToAjouEmail(CustomUser user, AjouEmailVerifyRequest ajouIdReq) {
+    public Mono<EmailSendResult> sendVerifyTokenToAjouEmail(CustomUser user, AjouEmailVerifyRequest ajouIdReq) {
         String ajouEmail = new SendEmailDto(ajouIdReq, null, null).getTo();
-
         return uploadVerifyTokenInfo(user, ajouEmail)
                 .flatMap(verifingTokenInfo ->
                         emailUtils.send(new SendEmailDto(
                                 ajouIdReq,
                                 verifyMessageSubject,
                                 verifyMessageHead + verifingTokenInfo.getVerifyToken() + verifyMessageTail
-                        )));
+                        ))).map(b -> new EmailSendResult(b));
     }
 
-    public Mono<Boolean> checkVerifyTokenIsCorrect(CustomUser user, VerifyTokenRequest reqData) {
-        return tokenInfoRepository.findVerifingTokenInfoByUserCode(user.getUserCode())
-                .doOnNext(verifingTokenInfo -> Assert.notNull(verifingTokenInfo, "발급된 토큰 넘버가 없습니다."))
+    public Mono<VerifingTokenSendResult> checkVerifyTokenIsCorrect(CustomUser user, VerifyTokenRequest reqData) {
+        return getVerifyTokenInfo(user.getUserCode())
                 .flatMap(verifingTokenInfo -> {
-                    if(verifingTokenInfo.getVerifyToken().equals(reqData.getVerifyToken())) {
-                        return tokenInfoRepository.deleteById(verifingTokenInfo.getId())
-                                .then(verifyInfoRepository.save(
-                                        new VerifyInfo(verifingTokenInfo.getUserCode(), verifingTokenInfo.getVerifyEmail())
-                                )).map(verifyInfo -> verifyInfo != null);
-                    }
-                    return Mono.just(false);
+                    if(!verifingTokenInfo.getVerifyToken().equals(reqData.getVerifyToken()))
+                        return Mono.just(new VerifingTokenSendResult(false));
+                    return deleteVerifyTokenInfo(verifingTokenInfo.getId())
+                            .then(saveVerifyInfo(verifingTokenInfo))
+                            .flatMap(verifyInfo -> Mono.just(new VerifingTokenSendResult(verifyInfo != null)));
                 });
     }
 
     protected Mono<VerifingTokenInfo> uploadVerifyTokenInfo(CustomUser user, String verifyEmail) {
         final String token = makeVerifyToken();
-        return tokenInfoRepository.findVerifingTokenInfoByUserCode(user.getUserCode())
+        return  isVerifiedUser(user.getUserCode())
+                .then(getVerifyTokenInfo(user.getUserCode(), false))
                 .switchIfEmpty(Mono.defer(() -> Mono.just(new VerifingTokenInfo(user.getUserCode(), verifyEmail))
                 )).flatMap(verifingTokenInfo -> {
                     verifingTokenInfo.setVerifyToken(token);
                     verifingTokenInfo.setVerifyEmail(verifyEmail);
-                    return tokenInfoRepository.save(verifingTokenInfo);
+                    return tokenInfoRepository.save(verifingTokenInfo)
+                            .doOnError(throwable -> Mono.error(ExceptionCode.CANT_CREATE_VERIFY_INFO.build()));
                 });
+    }
+
+    protected Mono<Void> isVerifiedUser(String userCode) {
+        return verifyInfoRepository.findVerifyInfoByUserCode(userCode)
+                .flatMap(verifyInfo -> {
+                    if(verifyInfo == null)
+                        return Mono.empty();
+                    return Mono.error(ExceptionCode.ALREADY_EXIST_VERIFYINFO.build());
+                });
+    }
+
+    protected Mono saveVerifyInfo(VerifingTokenInfo verifingTokenInfo) {
+        return verifyInfoRepository.save(new VerifyInfo(verifingTokenInfo.getUserCode(), verifingTokenInfo.getVerifyEmail()))
+                .doOnError(throwable -> Mono.error(ExceptionCode.CANT_CREATE_VERIFY_INFO.build()));
+    }
+
+    protected Mono deleteVerifyTokenInfo(Long id) {
+        return tokenInfoRepository.deleteById(id)
+                .doOnError(throwable ->  Mono.error(ExceptionCode.CANT_REMOVE_VERIFINGTOKENINFO.build()));
+    }
+
+    protected Mono<VerifingTokenInfo> getVerifyTokenInfo(String userCode, Boolean throwable) {
+        if(throwable)
+            return getVerifyTokenInfo(userCode);
+        return tokenInfoRepository.findVerifingTokenInfoByUserCode(userCode)
+                .doOnError(throwable1 -> Mono.error(ExceptionCode.ERROR_GET_VERIFYING_TOKEN.build()));
+    }
+
+    protected Mono<VerifingTokenInfo> getVerifyTokenInfo(String userCode) {
+        return tokenInfoRepository.findVerifingTokenInfoByUserCode(userCode)
+                .doOnError(throwable -> Mono.error(ExceptionCode.ERROR_GET_VERIFYING_TOKEN.build()))
+                .switchIfEmpty(Mono.error(ExceptionCode.NON_FOUND_VERIFYTOKEN.build()));
     }
 
     private String makeVerifyToken() {
