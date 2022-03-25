@@ -1,6 +1,8 @@
 package com.metajou.authserver.entity.token;
 
-import io.swagger.annotations.ApiModel;
+import com.metajou.authserver.controller.TokenController;
+import com.metajou.authserver.entity.response.ResponseWrapper;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.util.Date;
@@ -10,7 +12,6 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 @ToString
-@ApiModel(value = "인증 정보")
 public class AuthInfoRes {
     private String user;
     private String provider;
@@ -18,3 +19,4 @@ public class AuthInfoRes {
     private String role;
     private String verifiedEmail;
 }
+

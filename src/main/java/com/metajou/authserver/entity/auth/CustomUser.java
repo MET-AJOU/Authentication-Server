@@ -1,6 +1,9 @@
 package com.metajou.authserver.entity.auth;
 
 import com.metajou.authserver.entity.Token;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -11,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @ToString
+@Hidden
 public class CustomUser implements UserDetails {
 
     @Getter
