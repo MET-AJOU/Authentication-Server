@@ -1,15 +1,17 @@
 package com.metajou.authserver.entity.verify.req;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.jackson.Jacksonized;
 
-@ToString
 @Getter
+@NoArgsConstructor
+@Jacksonized
 public class VerifyTokenRequest {
-    private final String verifyToken;
-
-    public VerifyTokenRequest(@JsonProperty("VerifyToken") String verifyToken) {
-        this.verifyToken = verifyToken;
-    }
+    @JsonProperty
+    private String verifyToken;
 }

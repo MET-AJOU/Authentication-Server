@@ -33,7 +33,7 @@ public class TokenService {
                             .role(authInfo.getAuthorities())
                             .expiredTime(jwtUtils.getExpirationDateFromToken(user.getToken().getValue()))
                             .verifiedEmail(verifyInfo.getVerifyEmail())
-                            .build()).doOnNext(authInfoRes -> System.err.println(authInfoRes));
+                            .build());
             return res;
         });
     }
@@ -55,7 +55,7 @@ public class TokenService {
         if(throwable)
             return getVerifyInfo(user);
         return verifyInfoRepository.findVerifyInfoByUserCode(user.getUserCode())
-                .switchIfEmpty(Mono.defer(() -> Mono.just(new VerifyInfo(user.getUserCode(), ""))));
+                .switchIfEmpty(Mono.defer(() -> Mono.just(VerifyInfo.empty)));
     }
 
     protected Mono<VerifyInfo> getVerifyInfo(CustomUser user) {

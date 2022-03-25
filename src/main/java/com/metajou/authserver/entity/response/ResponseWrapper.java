@@ -3,11 +3,14 @@ package com.metajou.authserver.entity.response;
 import com.metajou.authserver.exception.ExceptionCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class ResponseWrapper<T> {
 
     @Setter
@@ -21,7 +24,12 @@ public class ResponseWrapper<T> {
 
     public ResponseWrapper(T obj){
         this.res = obj;
-    };
+    }
+
+    public ResponseWrapper(T obj, HttpStatus status) {
+        this.res = obj;
+        this.status = status.value();
+    }
 
     public ResponseWrapper(T obj, ExceptionCode code) {
         this.res = obj;

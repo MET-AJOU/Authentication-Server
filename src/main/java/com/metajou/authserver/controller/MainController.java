@@ -6,6 +6,11 @@ import com.metajou.authserver.entity.Token;
 import com.metajou.authserver.exception.ExceptionCode;
 import com.metajou.authserver.service.AuthInfoService;
 import com.metajou.authserver.service.TokenService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,40 +23,21 @@ import java.net.URI;
 @RestController
 public class MainController {
 
-    private final AuthInfoService authInfoService;
-    private final TokenService tokenService;
-
-    @Autowired
-    public MainController(AuthInfoService authInfoService, TokenService tokenService) {
-        this.authInfoService = authInfoService;
-        this.tokenService = tokenService;
+    @Operation(summary = "구글 로그인 페이지로 리다이렉트합니다.")
+    @GetMapping("/login/google")
+    public Mono<ResponseEntity> getGoogleLogin() {
+        return Mono.just(ResponseEntity
+                .status(HttpStatus.TEMPORARY_REDIRECT)
+                .location(URI.create("/oauth2/authorization/google"))
+                .build());
     }
 
-    @GetMapping
-    public Mono<ResponseEntity<Void>> getHome() {
-        return Mono.error(ExceptionCode.NOT_FOUND_404.build());
-    }
-
-    ///oauth2/authorization/google <= login
-
+    @Operation(summary = "API 홈페이지로 리다이렉트합니다.")
     @GetMapping("/api")
     public Mono<ResponseEntity> getSwaggerHome() {
         return Mono.just(ResponseEntity
                 .status(HttpStatus.TEMPORARY_REDIRECT)
-                .location(URI.create("/swagger-ui/index.html"))
+                .location(URI.create("/webjars/swagger-ui/index.html"))
                 .build());
-    }
-
-    @GetMapping("/testresponse")
-    public Mono<ResponseEntity> testResApi() {
-        return BaseResponse.builder()
-                .body(Mono.just(new Token("asd")))
-                .except(ExceptionCode.EXPIRED_TOKEN)
-                .build().toMonoEntity();
-    }
-
-    @GetMapping("/testerror")
-    public Mono<ResponseEntity<ResponseWrapper>> testErrorApi() {
-        return Mono.error(ExceptionCode.NO_VERIFIED_USER.build());
     }
 }

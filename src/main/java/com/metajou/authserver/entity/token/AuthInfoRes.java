@@ -1,5 +1,8 @@
 package com.metajou.authserver.entity.token;
 
+import com.metajou.authserver.controller.TokenController;
+import com.metajou.authserver.entity.response.ResponseWrapper;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.util.Date;
@@ -16,3 +19,4 @@ public class AuthInfoRes {
     private String role;
     private String verifiedEmail;
 }
+
