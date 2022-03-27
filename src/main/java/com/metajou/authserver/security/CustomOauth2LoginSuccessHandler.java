@@ -45,7 +45,7 @@ public class CustomOauth2LoginSuccessHandler extends RedirectServerAuthenticatio
                         webFilterExchange.getExchange().getResponse(), token
                 );
             }).then(serverRedirectStrategy.sendRedirect(webFilterExchange.getExchange(),
-                    URI.create(redirectUrl))
+                    URI.create(webServerUrl))
             );
         }
         catch (Exception e) {

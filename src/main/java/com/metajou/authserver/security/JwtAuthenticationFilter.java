@@ -1,9 +1,12 @@
 package com.metajou.authserver.security;
 
+import com.metajou.authserver.exception.ExceptionCode;
 import com.metajou.authserver.util.JwtUtils;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.web.server.authorization.ServerWebExchangeDelegatingServerAccessDeniedHandler;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -25,22 +28,17 @@ public class JwtAuthenticationFilter implements WebFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
-
         if (jwtUtils.isAppropriateRequestForFilter(request)) {
             try {
                 String token = jwtUtils.resolveToken(request);
                 Authentication authentication = jwtUtils.getAuthentication(token);
                 return chain.filter(exchange)
                         .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
-                        //.subscriberContext(ReactiveSecurityContextHolder.withAuthentication(authentication));
             } catch (Exception e) {
-                System.err.println(e.getMessage());
             }
         }
 
         return chain.filter(exchange);
     }
-
-
 
 }
