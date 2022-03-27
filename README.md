@@ -1,4 +1,4 @@
-# Met:Ajou 인증서버
+# Met:Ajou Auth Server
 
 
 
