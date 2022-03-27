@@ -23,6 +23,8 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
+//TODO: https://stackoverflow.com/questions/37770967/jwt-tokens-in-sessionstorage-vs-cookies
+
 @EnableWebFluxSecurity
 @ComponentScan(basePackages = {
         "com.metajou.authserver.security",
