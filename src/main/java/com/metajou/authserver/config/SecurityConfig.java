@@ -62,7 +62,7 @@ public class SecurityConfig {
                 });
 
         //TODO ADD CUSTOM Filter
-        http.addFilterBefore(new JwtAuthenticationFilter(jwtUtils), SecurityWebFiltersOrder.LAST);
+        http.addFilterBefore(new JwtAuthenticationFilter(jwtUtils), SecurityWebFiltersOrder.OAUTH2_AUTHORIZATION_CODE);
 
         //TODO ETC
         http.csrf().disable();
