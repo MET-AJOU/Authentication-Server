@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ExceptionCode {
 
+    //JWT TOKEn ERROR
+    AUTH_TOKEN_ERROR(new GlobalException(HttpStatus.BAD_REQUEST, "접근 토근이 유효하지 않습니다.")),
     //Auth
     NOT_FOUND_AUTHINFO(new GlobalException(HttpStatus.NOT_FOUND, "인증정보가 존재하지 않습니다.")),
     NO_VERIFIED_USER(new GlobalException(HttpStatus.UNAUTHORIZED, "인증받지 않은 유저입니다.")),
