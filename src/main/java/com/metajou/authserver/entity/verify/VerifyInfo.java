@@ -17,13 +17,13 @@ public class VerifyInfo {
     @Id
     private Long id;
     @Column("user_code")
-    private String userCode;
+    private Long userCode;
     @Column("verify_email")
     private String verifyEmail;
     @Column("verify_time")
     private LocalDateTime verifyTime;
 
-    public VerifyInfo(String userCode, String verifyEmail) {
+    public VerifyInfo(Long userCode, String verifyEmail) {
         this.userCode = userCode;
         this.verifyEmail = verifyEmail;
         this.verifyTime = LocalDateTime.now();

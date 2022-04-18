@@ -26,7 +26,7 @@ public class AdminService {
         Assert.isTrue(!ADMIN_KEY.equals(req), "adminToken이 일치하지 않습니다.");
 
         return Mono.just(user.getUserCode())
-                .flatMap(authInfoRepository::findAuthInfoByUserCode)
+                .flatMap(authInfoRepository::findById)
                 .doOnNext(authInfo -> authInfo.addAuthorities(Role.ROLE_ADMIN))
                 .flatMap(authInfoRepository::save)
                 .map(authInfo -> authInfo != null);

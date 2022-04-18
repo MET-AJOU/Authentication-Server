@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class CustomAuthentication implements Authentication {
 
     @Getter
-    private final String userCode;
+    private final Long userCode;
     @Getter
     private final String userEmail;
     @Getter
@@ -28,7 +28,7 @@ public class CustomAuthentication implements Authentication {
     @Setter
     private Boolean isAuthenticated = true;
 
-    public CustomAuthentication(String userCode, Claims claims, String accessToken) {
+    public CustomAuthentication(Long userCode, Claims claims, String accessToken) {
         this.userCode = userCode;
         this.claims = claims;
         this.userEmail = claims.get("email", String.class);
@@ -74,6 +74,6 @@ public class CustomAuthentication implements Authentication {
 
     @Override
     public String getName() {
-        return this.userCode;
+        return this.getName();
     }
 }

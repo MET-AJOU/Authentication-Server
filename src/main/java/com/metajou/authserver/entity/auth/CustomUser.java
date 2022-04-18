@@ -2,8 +2,6 @@ package com.metajou.authserver.entity.auth;
 
 import com.metajou.authserver.entity.Token;
 import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -18,7 +16,7 @@ import java.util.Collection;
 public class CustomUser implements UserDetails {
 
     @Getter
-    private final String userCode;
+    private final Long userCode;
     @Getter
     private final String userEmail;
     @Getter
@@ -35,7 +33,7 @@ public class CustomUser implements UserDetails {
     @Setter
     private Boolean isEnabled = true;
 
-    public CustomUser(String userCode, String userEmail, String accessToken, ArrayList<? extends GrantedAuthority> authorities) {
+    public CustomUser(Long userCode, String userEmail, String accessToken, ArrayList<? extends GrantedAuthority> authorities) {
         this.userCode = userCode;
         this.userEmail = userEmail;
         this.token = new Token(accessToken);

@@ -17,7 +17,6 @@ import org.springframework.util.Assert;
 import javax.annotation.PostConstruct;
 import java.security.Key;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 public class JwtUtils {
@@ -42,8 +41,8 @@ public class JwtUtils {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
-    public String getUserCodeFromToken(String token) {
-        return getAllClaimsFromToken(token).getSubject();
+    public Long getUserCodeFromToken(String token) {
+        return Long.parseLong(getAllClaimsFromToken(token).getSubject());
     }
 
     public Date getExpirationDateFromToken(String token) {
@@ -67,17 +66,17 @@ public class JwtUtils {
 
         claims.put("role", roles);
         claims.put("email", authInfo.getUserEmail());
-        return doGenerateToken(claims, authInfo.getUserCode());
+        return doGenerateToken(claims, authInfo.getId());
     }
 
-    private String doGenerateToken(Map<String, Object> claims, String userCode) {
+    private String doGenerateToken(Map<String, Object> claims, Long userCode) {
         Long expirationTimeLong = Long.parseLong(expirationTime); //in second
         final Date createdDate = new Date();
         final Date expirationDate = new Date(createdDate.getTime() + expirationTimeLong * 1000);
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userCode)
+                .setSubject(String.valueOf(userCode))
                 .setIssuedAt(createdDate)
                 .setExpiration(expirationDate)
                 .signWith(key)

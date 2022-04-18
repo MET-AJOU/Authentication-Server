@@ -74,7 +74,7 @@ public class VerifyService {
                 });
     }
 
-    protected Mono<Void> isVerifiedUser(String userCode) {
+    protected Mono<Void> isVerifiedUser(Long userCode) {
         return verifyInfoRepository.findVerifyInfoByUserCode(userCode)
                 .flatMap(verifyInfo -> {
                     if(verifyInfo == null)
@@ -93,14 +93,14 @@ public class VerifyService {
                 .doOnError(throwable ->  Mono.error(ExceptionCode.CANT_REMOVE_VERIFINGTOKENINFO.build()));
     }
 
-    protected Mono<VerifingTokenInfo> getVerifyTokenInfo(String userCode, Boolean throwable) {
+    protected Mono<VerifingTokenInfo> getVerifyTokenInfo(Long userCode, Boolean throwable) {
         if(throwable)
             return getVerifyTokenInfo(userCode);
         return tokenInfoRepository.findVerifingTokenInfoByUserCode(userCode)
                 .doOnError(throwable1 -> Mono.error(ExceptionCode.ERROR_GET_VERIFYING_TOKEN.build()));
     }
 
-    protected Mono<VerifingTokenInfo> getVerifyTokenInfo(String userCode) {
+    protected Mono<VerifingTokenInfo> getVerifyTokenInfo(Long userCode) {
         return tokenInfoRepository.findVerifingTokenInfoByUserCode(userCode)
                 .doOnError(throwable -> Mono.error(ExceptionCode.ERROR_GET_VERIFYING_TOKEN.build()))
                 .switchIfEmpty(Mono.error(ExceptionCode.NON_FOUND_VERIFYTOKEN.build()));

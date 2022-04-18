@@ -15,18 +15,18 @@ public class VerifingTokenInfo {
     @Id
     private Long id;
     @Column("user_code")
-    private String userCode;
+    private Long userCode;
     @Column("verify_email")
     private String verifyEmail;
     @Column("verify_token")
     private String verifyToken;
 
-    public VerifingTokenInfo(String userCode, String verifyEmail) {
+    public VerifingTokenInfo(Long userCode, String verifyEmail) {
         this.userCode = userCode;
         this.verifyEmail = verifyEmail;
     }
 
-    public VerifingTokenInfo(String userCode, String verifyEmail, String verifyToken) {
+    public VerifingTokenInfo(Long userCode, String verifyEmail, String verifyToken) {
         this.userCode = userCode;
         this.verifyEmail = verifyEmail;
         this.verifyToken = verifyToken;
