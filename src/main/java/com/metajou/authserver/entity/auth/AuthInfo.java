@@ -25,8 +25,6 @@ public class AuthInfo {
     private OAuth2Provider provider;
     @Column("user_email")
     private String userEmail;
-    @Column("user_code")
-    private String userCode;
     @Column("authorities")
     private String authorities = "";
 
@@ -34,7 +32,6 @@ public class AuthInfo {
         this.userId = userId;
         this.provider = provider;
         this.userEmail = userEmail;
-        this.userCode = generateAuthInfoUserCode(userId, provider);
         this.authorities = Role.ROLE_GUEST.toString();
     }
 
@@ -42,7 +39,6 @@ public class AuthInfo {
         this.userId = userId;
         this.provider = provider;
         this.userEmail = userEmail;
-        this.userCode = generateAuthInfoUserCode(userId, provider);
         roles.stream().forEach(role -> addAuthorities(role));
     }
 
@@ -57,23 +53,6 @@ public class AuthInfo {
         if (extractAuthorities().contains(role))
             return;
         this.authorities += ("," + role.toString());
-    }
-
-    private static String generateAuthInfoUserCode(String userId, OAuth2Provider provider) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            StringBuilder builder = new StringBuilder();
-            byte[] bytes = (userId + provider.toString().toUpperCase(Locale.ROOT)).getBytes();
-            md.update(bytes);
-            for (byte b : md.digest()) {
-                builder.append(String.format("%02x", b));
-            }
-            return builder.toString();
-        }
-        catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
-        return null;
     }
 
 }

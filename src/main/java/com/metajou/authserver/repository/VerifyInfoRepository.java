@@ -8,5 +8,5 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface VerifyInfoRepository extends R2dbcRepository<VerifyInfo, Long> {
-    Mono<VerifyInfo> findVerifyInfoByUserCode(String userCode);
+    Mono<VerifyInfo> findVerifyInfoByUserCode(Long userCode);
 }

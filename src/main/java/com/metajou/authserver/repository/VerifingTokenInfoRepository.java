@@ -7,5 +7,5 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface VerifingTokenInfoRepository extends R2dbcRepository<VerifingTokenInfo, Long> {
-    public Mono<VerifingTokenInfo> findVerifingTokenInfoByUserCode(String userCode);
+    public Mono<VerifingTokenInfo> findVerifingTokenInfoByUserCode(Long userCode);
 }

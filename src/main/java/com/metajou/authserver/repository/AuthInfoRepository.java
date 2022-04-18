@@ -9,6 +9,4 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface AuthInfoRepository extends R2dbcRepository<AuthInfo, Long> {
     Mono<AuthInfo> findAuthInfoByUserIdAndProvider(String userId, OAuth2Provider provider);
-    Mono<AuthInfo> findAuthInfoByUserCode(String userCode);
-
 }

@@ -41,7 +41,7 @@ public class AuthInfoService {
     }
 
     protected Mono<AuthInfo> getAuthInfo(CustomUser user) {
-        return authInfoRepository.findAuthInfoByUserCode(user.getUserCode())
+        return authInfoRepository.findById(user.getUserCode())
                 .switchIfEmpty(Mono.error(ExceptionCode.NOT_FOUND_AUTHINFO.build()));
     }
 
