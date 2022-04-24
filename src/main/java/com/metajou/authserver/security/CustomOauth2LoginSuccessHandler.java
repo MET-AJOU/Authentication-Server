@@ -1,5 +1,7 @@
 package com.metajou.authserver.security;
 
+import com.metajou.authserver.entity.auth.AuthInfo;
+import com.metajou.authserver.entity.auth.Role;
 import com.metajou.authserver.entity.auth.oauth2.OAuth2UserInfo;
 import com.metajou.authserver.service.AuthInfoService;
 import com.metajou.authserver.util.JwtUtils;
@@ -21,8 +23,6 @@ public class CustomOauth2LoginSuccessHandler extends RedirectServerAuthenticatio
 
     @Value("${spring.client.webserver.url}")
     private String webServerUrl;
-    @Value("${spring.security.oauth2.client.redirect.url}")
-    private String redirectUrl;
 
     private final ServerRedirectStrategy serverRedirectStrategy = new DefaultServerRedirectStrategy();
     private final AuthInfoService authInfoService;
@@ -44,14 +44,21 @@ public class CustomOauth2LoginSuccessHandler extends RedirectServerAuthenticatio
                 jwtUtils.addCookieAccessTokenToResponse(
                         webFilterExchange.getExchange().getResponse(), token
                 );
-            }).then(serverRedirectStrategy.sendRedirect(webFilterExchange.getExchange(),
-                    URI.create(webServerUrl))
+            }).flatMap(authInfo -> serverRedirectStrategy
+                    .sendRedirect(webFilterExchange.getExchange(), URI.create(setRedirectPos(authInfo)))
             );
         }
         catch (Exception e) {
             System.err.println(e.getMessage());
         }
-        return serverRedirectStrategy.sendRedirect(webFilterExchange.getExchange(),
-                URI.create(webServerUrl));
+        return serverRedirectStrategy
+                .sendRedirect(webFilterExchange.getExchange(), URI.create(webServerUrl));
+    }
+
+    private String setRedirectPos(AuthInfo authInfo) {
+        if(authInfo.containAuthority(Role.ROLE_USER)) {
+            return webServerUrl + "/map";
+        }
+        return webServerUrl + "/register";
     }
 }
