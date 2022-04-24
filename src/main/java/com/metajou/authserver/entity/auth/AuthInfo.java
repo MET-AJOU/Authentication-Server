@@ -6,7 +6,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.security.MessageDigest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,6 +46,10 @@ public class AuthInfo {
         return Arrays.stream(roleStr).map(Role::valueOf)
                 .filter(role -> role!=null).collect(Collectors.toSet())
                 .stream().collect(Collectors.toList());
+    }
+
+    public Boolean containAuthority(Role role) {
+        return extractAuthorities().contains(role);
     }
 
     public void addAuthorities(@NonNull Role role) {
