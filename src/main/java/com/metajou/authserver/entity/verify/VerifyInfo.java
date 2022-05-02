@@ -22,6 +22,8 @@ public class VerifyInfo {
     private String verifyEmail;
     @Column("verify_time")
     private LocalDateTime verifyTime;
+    @Column("useable")
+    private Boolean useable = false;
 
     public VerifyInfo(Long userCode, String verifyEmail) {
         this.userCode = userCode;

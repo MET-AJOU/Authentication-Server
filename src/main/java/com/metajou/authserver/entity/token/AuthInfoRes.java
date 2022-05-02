@@ -18,5 +18,6 @@ public class AuthInfoRes {
     private Date expiredTime;
     private String role;
     private String verifiedEmail;
+    private Boolean useable;
 }
 

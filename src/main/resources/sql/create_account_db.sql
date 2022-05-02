@@ -21,6 +21,7 @@ CREATE TABLE `VerifyInfo` (
                               `verify_email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
                               `verify_time` datetime DEFAULT NULL,
                               `user_code` int DEFAULT NULL,
+                              `useable` tinyint(1) NOT NULL DEFAULT '0',
                               PRIMARY KEY (`id`),
                               UNIQUE KEY `user_code` (`user_code`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
