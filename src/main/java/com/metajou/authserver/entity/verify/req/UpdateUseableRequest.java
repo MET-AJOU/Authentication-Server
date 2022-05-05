@@ -1,0 +1,14 @@
+package com.metajou.authserver.entity.verify.req;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
+
+@Getter
+@NoArgsConstructor
+@Jacksonized
+public class UpdateUseableRequest {
+    @JsonProperty
+    Boolean useable;
+}

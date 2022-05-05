@@ -5,9 +5,11 @@ import com.metajou.authserver.entity.auth.Role;
 import com.metajou.authserver.entity.response.BaseResponse;
 import com.metajou.authserver.entity.response.ResponseWrapper;
 import com.metajou.authserver.entity.verify.req.AjouEmailVerifyRequest;
+import com.metajou.authserver.entity.verify.req.UpdateUseableRequest;
 import com.metajou.authserver.entity.verify.req.VerifyTokenRequest;
 import com.metajou.authserver.entity.verify.res.EmailSendResult;
 import com.metajou.authserver.entity.verify.res.VerifingTokenSendResult;
+import com.metajou.authserver.entity.verify.res.VerifyInfoResult;
 import com.metajou.authserver.service.AuthInfoService;
 import com.metajou.authserver.service.VerifyService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -52,6 +54,21 @@ public class VerifyController {
                 .build().toMonoEntity();
     }
 
+    @PostMapping("/useable")
+    @Operation(summary = "사용자 정보 동의 업데이트")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "",
+                    content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ApiCallVerifyInfoResult.class))}
+            )})
+    public Mono<ResponseEntity> updateUseable(
+            @AuthenticationPrincipal CustomUser user,
+            @RequestBody UpdateUseableRequest reqData
+    ) {
+        return BaseResponse.builder()
+                .body(verifyService.updateVerifyInfo(user,reqData))
+                .build().toMonoEntity();
+    }
+
     @PostMapping("/send/ajouemail")
     @Operation(summary = "아주대 계정에 인증코드 메일을 보냅니다")
     @ApiResponses(value = {
@@ -70,5 +87,6 @@ public class VerifyController {
 
     private class ApiCallEmailSendResult extends ResponseWrapper<EmailSendResult> {}
     private class ApiCallVerifingTokenSendResult extends ResponseWrapper<VerifingTokenSendResult> {}
+    private class ApiCallVerifyInfoResult extends ResponseWrapper<VerifyInfoResult> {}
 
 }

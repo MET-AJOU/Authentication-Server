@@ -33,6 +33,7 @@ public class TokenService {
                             .role(authInfo.getAuthorities())
                             .expiredTime(jwtUtils.getExpirationDateFromToken(user.getToken().getValue()))
                             .verifiedEmail(verifyInfo.getVerifyEmail())
+                            .useable(verifyInfo.getUseable())
                             .build());
             return res;
         });

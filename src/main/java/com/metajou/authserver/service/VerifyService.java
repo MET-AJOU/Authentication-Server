@@ -5,9 +5,11 @@ import com.metajou.authserver.entity.verify.VerifingTokenInfo;
 import com.metajou.authserver.entity.verify.VerifyInfo;
 import com.metajou.authserver.entity.verify.req.AjouEmailVerifyRequest;
 import com.metajou.authserver.entity.verify.dto.SendEmailDto;
+import com.metajou.authserver.entity.verify.req.UpdateUseableRequest;
 import com.metajou.authserver.entity.verify.req.VerifyTokenRequest;
 import com.metajou.authserver.entity.verify.res.EmailSendResult;
 import com.metajou.authserver.entity.verify.res.VerifingTokenSendResult;
+import com.metajou.authserver.entity.verify.res.VerifyInfoResult;
 import com.metajou.authserver.exception.ExceptionCode;
 import com.metajou.authserver.repository.VerifingTokenInfoRepository;
 import com.metajou.authserver.repository.VerifyInfoRepository;
@@ -37,6 +39,19 @@ public class VerifyService {
 
     public Mono<Boolean> sendEmail(CustomUser user, AjouEmailVerifyRequest req) {
         return emailUtils.send(null);
+    }
+
+    public Mono<VerifyInfoResult> updateVerifyInfo(CustomUser user, UpdateUseableRequest req) {
+        return getVerifyInfo(user.getUserCode())
+                .flatMap(verifyInfo -> {
+                    verifyInfo.setUseable(req.getUseable());
+                    return verifyInfoRepository.save(verifyInfo);
+                }).flatMap(verifyInfo -> Mono.just(
+                        VerifyInfoResult.builder()
+                        .verifyEmail(verifyInfo.getVerifyEmail())
+                        .verifyTime(verifyInfo.getVerifyTime())
+                        .useable(verifyInfo.getUseable())
+                        .build()));
     }
 
     public Mono<EmailSendResult> sendVerifyTokenToAjouEmail(CustomUser user, AjouEmailVerifyRequest ajouIdReq) {
@@ -81,6 +96,12 @@ public class VerifyService {
                         return Mono.empty();
                     return Mono.error(ExceptionCode.ALREADY_EXIST_VERIFYINFO.build());
                 });
+    }
+
+
+    protected Mono<VerifyInfo> getVerifyInfo(Long userCode) {
+        return verifyInfoRepository.findVerifyInfoByUserCode(userCode)
+                .switchIfEmpty(Mono.error(ExceptionCode.NOT_FOUND_VERIFYINFO.build()));
     }
 
     protected Mono saveVerifyInfo(VerifingTokenInfo verifingTokenInfo) {
