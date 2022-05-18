@@ -73,6 +73,7 @@ public class R2dbcConfig extends AbstractR2dbcConfiguration {
                 super.afterPropertiesSet();
             }
             catch (Exception e) {
+                System.err.println(e.getStackTrace());
             }
         }
     }

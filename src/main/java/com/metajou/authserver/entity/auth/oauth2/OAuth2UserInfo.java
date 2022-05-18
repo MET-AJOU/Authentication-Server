@@ -72,6 +72,7 @@ public class OAuth2UserInfo extends DefaultOidcUser {
         Map<String, Object> properties = (Map<String, Object>) this.getClaims().get("properties");
         this.id = String.valueOf(this.getClaims().get("id"));
         this.email = String.valueOf(properties.get("email"));
+        this.provider = OAuth2Provider.KAKAO;
     }
 
     public AuthInfo extractAuthInfo() {

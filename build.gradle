@@ -2,10 +2,11 @@ plugins {
     id 'org.springframework.boot' version '2.6.4'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id 'com.google.cloud.tools.jib' version '3.2.1'
 }
 
 group = 'com.metajou'
-version = '0.0.1-SNAPSHOT'
+version = 'metajou'
 sourceCompatibility = '17'
 
 repositories {
@@ -38,6 +39,20 @@ dependencies {
     implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
 
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+}
+
+jib {
+    from {
+        image = "openjdk:17"
+    }
+    to {
+        image = "${project.name.toLowerCase()}-${project.version.toString().toLowerCase()}"
+        tags= ["latest"]
+    }
+    container {
+        creationTime = "USE_CURRENT_TIMESTAMP"
+        ports=['10004']
+    }
 }
 
 tasks.named('test') {
