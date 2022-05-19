@@ -37,6 +37,15 @@ public class MainController {
                 .build());
     }
 
+    @Operation(summary = "카카오 로그인 페이지로 리다이렉트합니다.")
+    @GetMapping("/login/kakao")
+    public Mono<ResponseEntity> getKakaoLogin() {
+        return Mono.just(ResponseEntity
+                .status(HttpStatus.TEMPORARY_REDIRECT)
+                .location(URI.create(corsProperties.getUrl()[0]+"/oauth2/authorization/kakao"))
+                .build());
+    }
+
     @Operation(summary = "API 홈페이지로 리다이렉트합니다.")
     @GetMapping("/api")
     public Mono<ResponseEntity> getSwaggerHome() {
