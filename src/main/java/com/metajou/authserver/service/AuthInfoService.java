@@ -3,7 +3,7 @@ package com.metajou.authserver.service;
 import com.metajou.authserver.entity.auth.AuthInfo;
 import com.metajou.authserver.entity.auth.CustomUser;
 import com.metajou.authserver.entity.auth.Role;
-import com.metajou.authserver.entity.auth.oauth2.OAuth2UserInfo;
+import com.metajou.authserver.entity.auth.oauth2.CustomAuthInfo;
 import com.metajou.authserver.exception.ExceptionCode;
 import com.metajou.authserver.repository.AuthInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class AuthInfoService {
         this.authInfoRepository = authInfoRepository;
     }
 
-    public Mono<AuthInfo> registerAuthInfo(OAuth2UserInfo oAuth2UserInfo){
+    public Mono<AuthInfo> registerAuthInfo(CustomAuthInfo oAuth2UserInfo){
         AuthInfo authInfo = oAuth2UserInfo.extractAuthInfo();
         Mono<AuthInfo> authInfoMono = authInfoRepository
                 .findAuthInfoByUserIdAndProvider(authInfo.getUserId(), authInfo.getProvider())
